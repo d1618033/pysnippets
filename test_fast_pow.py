@@ -1,5 +1,5 @@
 from unittest import TestCase
-from fast_pow import python_pow, slow_iter_pow, fast_iter_pow, slow_recursive_pow
+from fast_pow import python_pow, slow_iter_pow, fast_iter_pow, slow_recursive_pow, fast_recursive_pow
 
 
 class PowTester:
@@ -52,3 +52,7 @@ class TestFastIterPow(TestCase, PowTester):
 
 class TestSlowRecursivePow(TestCase, PowTester):
     func = slow_recursive_pow
+
+
+class TestFastRecursivePow(TestCase, PowTester):
+    func = fast_recursive_pow

@@ -24,3 +24,13 @@ def slow_recursive_pow(x, n):
         return x * slow_recursive_pow(x, n-1)
     else:
         return 1
+
+
+def fast_recursive_pow(x, n):
+    if n:
+        if n % 2:
+            return fast_recursive_pow(x, n - 1) * x
+        else:
+            return fast_recursive_pow(x * x, n / 2)
+    else:
+        return 1
