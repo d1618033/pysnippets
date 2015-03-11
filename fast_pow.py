@@ -9,6 +9,17 @@ def slow_iter_pow(x, n):
 
 
 def fast_iter_pow(x, n):
+    """
+    we can write:
+    n = a0*1 + a1*2 + a2*4 + ...
+    (n's binary form)
+    so:
+    x^n = x^(a0*1 + a1*2 + a2*4 + ...)
+    = (x^1)^(a0) * (x^2)^(a1) * (x^4)^(a2) * ...
+    now, notice that
+    n % 2 is equal to a0
+    and n // 2 = a1 + a2 * 2 + ... (i.e the same form, with one less digit)
+    """
     res = 1
     element = x
     while n > 0:
