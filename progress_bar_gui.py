@@ -13,8 +13,9 @@ def example_command(progress):
     """
     :param progress: progress function
     """
+    progress(max=50)
     for i in range(50):
-        progress(progress=2*(i+1), log="[{0}] got to: {1}".format(datetime.datetime.now(), i))
+        progress(progress=i+1, log="[{0}] got to: {1}".format(datetime.datetime.now(), i))
         time.sleep(0.05)
 
 
@@ -23,6 +24,9 @@ class Progressbar(ttk.Progressbar):
         self.progress_bar_value = tkinter.IntVar(value=0)
         kwargs['variable'] = self.progress_bar_value
         ttk.Progressbar.__init__(self, *args, **kwargs)
+
+    def set_max(self, value):
+        self.config(maximum=value)
 
     def set(self, value):
         self.progress_bar_value.set(value)
@@ -123,6 +127,8 @@ class App(ttk.Frame):
         def on_new_element_in_queue(d):
             if 'progress' in d:
                 self.progress_bar.set(d['progress'])
+            if 'max' in d:
+                self.progress_bar.set_max(d['max'])
             if 'log' in d:
                 self.log.append(d['log'])
 
