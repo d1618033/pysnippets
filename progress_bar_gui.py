@@ -143,9 +143,9 @@ class App(ttk.Frame):
             command=self.cmd.run
         )
         self.button.pack()
-        self.progress_bar = Progressbar(self)
+        self.progress_bar = Progressbar(self, length=375)
         self.progress_bar.pack()
-        self.log = TextWithScrollbars(self)
+        self.log = TextWithScrollbars(self, text_options={'width': 50})
         self.log.pack()
 
 
