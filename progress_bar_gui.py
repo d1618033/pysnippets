@@ -31,6 +31,14 @@ class Progressbar(ttk.Progressbar):
         return self.progress_bar_value.get()
 
 
+class Button(ttk.Button):
+    def disable(self):
+        self.config(state=tkinter.DISABLED)
+
+    def enable(self):
+        self.config(state=tkinter.NORMAL)
+
+
 class App(ttk.Frame):
     def __init__(self, master, root):
         ttk.Frame.__init__(self, master=master)
@@ -38,7 +46,7 @@ class App(ttk.Frame):
         self.root = root
 
     def add_widgets(self):
-        self.button = ttk.Button(
+        self.button = Button(
             self,
             text="Execute",
             command=self.on_click
@@ -47,14 +55,8 @@ class App(ttk.Frame):
         self.progress_bar = Progressbar(self)
         self.progress_bar.pack()
 
-    def disable_button(self):
-        self.button.config(state=tkinter.DISABLED)
-
-    def enable_button(self):
-        self.button.config(state=tkinter.NORMAL)
-
     def on_click(self):
-        self.disable_button()
+        self.button.disable()
         queue = multiprocessing.Queue()
         process = multiprocessing.Process(target=command, args=(queue.put,))
         process.start()
@@ -62,7 +64,7 @@ class App(ttk.Frame):
 
     def poll_progress(self, queue, process):
         if not process.is_alive():
-            self.enable_button()
+            self.button.enable()
         else:
             while not queue.empty():
                 p = queue.get()
