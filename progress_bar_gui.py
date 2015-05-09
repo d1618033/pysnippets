@@ -40,9 +40,9 @@ class Button(ttk.Button):
 
 
 class NonBlockingTkinterCommand:
-    def __init__(self, root, command, before, after, on_new_element_in_queue, poll_time=10):
+    def __init__(self, master, command, before, after, on_new_element_in_queue, poll_time=10):
         """
-        :param root: The root tkinter object (i.e, tkinter.Tk())
+        :param master: The container of this command (e.g a frame object or a root object)
         :param command: The command to run. The command must take a single argument
                         which will be a function to use to add to the queue.
         :param before: A function with no arguments that will be executed before running the command.
@@ -51,7 +51,7 @@ class NonBlockingTkinterCommand:
                                         that was added in the queue.
         :param poll_time: The time to wait between checks of the queue.
         """
-        self.root = root
+        self.master = master
         self.command = command
         self.before = before
         self.after = after
@@ -75,18 +75,17 @@ class NonBlockingTkinterCommand:
             while not queue.empty():
                 elem = queue.get()
                 self.on_new_element_in_queue(elem)
-            self.root.after(self.poll_time, self._poll, queue, process)
+            self.master.after(self.poll_time, self._poll, queue, process)
 
 
 class App(ttk.Frame):
-    def __init__(self, master, root):
+    def __init__(self, master):
         ttk.Frame.__init__(self, master=master)
-        self.root = root
         self.add_widgets()
 
     def add_widgets(self):
         self.cmd = NonBlockingTkinterCommand(
-            root=self.root,
+            self,
             command=example_command,
             before=lambda: self.button.disable(),
             after=lambda: self.button.enable(),
@@ -104,7 +103,9 @@ class App(ttk.Frame):
 
 def _example():
     root = tkinter.Tk()
-    App(master=root, root=root).pack()
+    frame = tkinter.Frame(root)
+    frame.pack()
+    App(master=frame).pack()
     root.mainloop()
 
 
