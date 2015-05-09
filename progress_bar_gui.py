@@ -8,13 +8,12 @@ import time
 import multiprocessing
 
 
-def example_command(progress_func):
+def example_command(progress):
     """
-    :param progress_func: a function that updates the progress bar
-     it expects to get as input a number between 0 and 100
+    :param progress: progress function
     """
     for i in range(1000):
-        progress_func((i+1)/10)
+        progress(progress=(i+1)/10)
         time.sleep(0.001)
 
 
@@ -29,6 +28,26 @@ class Progressbar(ttk.Progressbar):
 
     def get(self):
         return self.progress_bar_value.get()
+
+
+class Text(tkinter.Text):
+    def append(self, text):
+        self.insert(tkinter.END, text)
+
+
+class TextWithScrollbars(ttk.Frame):
+    def __init__(self, master, text_options={}):
+        ttk.Frame.__init__(self, master)
+        self.text_options = text_options
+        self.add_widgets()
+
+    def add_widgets(self):
+        scrollbar = ttk.Scrollbar(self)
+        text = Text(self, **self.text_options)
+        scrollbar.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+        text.pack(side=tkinter.LEFT, fill=tkinter.Y)
+        scrollbar.config(command=text.yview)
+        text.config(yscrollcommand=scrollbar.set)
 
 
 class Button(ttk.Button):
@@ -62,9 +81,11 @@ class NonBlockingTkinterCommand:
         """
         Run the command
         """
+        def progress_func(**kwargs):
+            queue.put(kwargs)
         self.before()
         queue = multiprocessing.Queue()
-        process = multiprocessing.Process(target=self.command, args=(queue.put,))
+        process = multiprocessing.Process(target=self.command, args=(progress_func,))
         process.start()
         self._poll(queue, process)
 
@@ -84,12 +105,16 @@ class App(ttk.Frame):
         self.add_widgets()
 
     def add_widgets(self):
+        def on_new_element_in_queue(d):
+            if 'progress' in d:
+                self.progress_bar.set(d['progress'])
+
         self.cmd = NonBlockingTkinterCommand(
             self,
             command=example_command,
             before=lambda: self.button.disable(),
             after=lambda: self.button.enable(),
-            on_new_element_in_queue=lambda value: self.progress_bar.set(value),
+            on_new_element_in_queue=on_new_element_in_queue,
         )
         self.button = Button(
             self,
