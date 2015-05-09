@@ -70,7 +70,11 @@ class App(ttk.Frame):
             self.root.after(10, self.poll_progress, queue, process)
 
 
-if __name__ == "__main__":
+def _example():
     root = tkinter.Tk()
     App(master=root, root=root).pack()
     root.mainloop()
+
+
+if __name__ == "__main__":
+    _example()
