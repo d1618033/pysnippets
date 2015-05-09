@@ -158,7 +158,7 @@ class App(ttk.Frame):
                 log=self.log.append,
             ),
         )
-        self.button.config(command=self.cmd)
+        self.button.config(command=self.cmd.run)
 
 
 def _example():
