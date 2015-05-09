@@ -67,7 +67,7 @@ class App(ttk.Frame):
             while not queue.empty():
                 p = queue.get()
                 self.progress_bar.set(p)
-            root.after(10, self.poll_progress, queue, process)
+            self.root.after(10, self.poll_progress, queue, process)
 
 
 if __name__ == "__main__":
