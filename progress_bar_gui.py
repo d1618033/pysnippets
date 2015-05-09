@@ -19,6 +19,17 @@ def example_command(progress):
         time.sleep(0.05)
 
 
+class Dispatcher:
+    def __init__(self, name_to_func_dict):
+        self.name_to_func_dict = name_to_func_dict
+
+    def __call__(self, dictionary):
+        print(dictionary)
+        for key, value in dictionary.items():
+            if key in self.name_to_func_dict:
+                self.name_to_func_dict[key](value)
+
+
 class Progressbar(ttk.Progressbar):
     def __init__(self, *args, **kwargs):
         self.progress_bar_value = tkinter.IntVar(value=0)
@@ -124,35 +135,31 @@ class App(ttk.Frame):
         self.add_widgets()
 
     def add_widgets(self):
-        def on_new_element_in_queue(d):
-            if 'progress' in d:
-                self.progress_bar.set(d['progress'])
-            if 'max' in d:
-                self.progress_bar.set_max(d['max'])
-            if 'log' in d:
-                self.log.append(d['log'])
-
         def before():
             self.button.disable()
             self.log.clear()
 
-        self.cmd = NonBlockingTkinterCommand(
-            self,
-            command=example_command,
-            before=before,
-            after=lambda: self.button.enable(),
-            on_new_element_in_queue=on_new_element_in_queue,
-        )
         self.button = Button(
             self,
             text="Execute",
-            command=self.cmd.run
         )
         self.button.pack()
         self.progress_bar = Progressbar(self, length=375)
         self.progress_bar.pack()
         self.log = TextWithScrollbars(self, text_options={'width': 50})
         self.log.pack()
+        self.cmd = NonBlockingTkinterCommand(
+            self,
+            command=example_command,
+            before=before,
+            after=lambda: self.button.enable(),
+            on_new_element_in_queue=Dispatcher({
+                'max': self.progress_bar.set_max,
+                'progress': self.progress_bar.set,
+                'log': self.log.append,
+            }),
+        )
+        self.button.config(command=self.cmd)
 
 
 def _example():
