@@ -13,9 +13,9 @@ def example_command(progress_func):
     :param progress_func: a function that updates the progress bar
      it expects to get as input a number between 0 and 100
     """
-    for i in range(100):
-        progress_func(i+1)
-        time.sleep(0.01)
+    for i in range(1000):
+        progress_func((i+1)/10)
+        time.sleep(0.001)
 
 
 class Progressbar(ttk.Progressbar):
