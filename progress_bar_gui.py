@@ -6,15 +6,16 @@ import tkinter
 from tkinter import ttk
 import time
 import multiprocessing
+import datetime
 
 
 def example_command(progress):
     """
     :param progress: progress function
     """
-    for i in range(1000):
-        progress(progress=(i+1)/10, log="got to: {0}".format(i))
-        time.sleep(0.001)
+    for i in range(50):
+        progress(progress=2*(i+1), log="[{0}] got to: {1}".format(datetime.datetime.now(), i))
+        time.sleep(0.05)
 
 
 class Progressbar(ttk.Progressbar):
