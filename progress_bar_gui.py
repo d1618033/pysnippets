@@ -13,7 +13,7 @@ def example_command(progress):
     :param progress: progress function
     """
     for i in range(1000):
-        progress(progress=(i+1)/10)
+        progress(progress=(i+1)/10, log="got to: {0}".format(i))
         time.sleep(0.001)
 
 
@@ -32,7 +32,14 @@ class Progressbar(ttk.Progressbar):
 
 class Text(tkinter.Text):
     def append(self, text):
-        self.insert(tkinter.END, text)
+        self.insert(tkinter.END, text+'\n')
+        self.move_to_end()
+
+    def clear(self):
+        self.delete(1.0, tkinter.END)
+
+    def move_to_end(self):
+        self.yview(tkinter.END)
 
 
 class TextWithScrollbars(ttk.Frame):
@@ -48,6 +55,13 @@ class TextWithScrollbars(ttk.Frame):
         text.pack(side=tkinter.LEFT, fill=tkinter.Y)
         scrollbar.config(command=text.yview)
         text.config(yscrollcommand=scrollbar.set)
+        self.text = text
+
+    def append(self, text):
+        self.text.append(text)
+
+    def clear(self):
+        self.text.clear()
 
 
 class Button(ttk.Button):
@@ -108,11 +122,17 @@ class App(ttk.Frame):
         def on_new_element_in_queue(d):
             if 'progress' in d:
                 self.progress_bar.set(d['progress'])
+            if 'log' in d:
+                self.log.append(d['log'])
+
+        def before():
+            self.button.disable()
+            self.log.clear()
 
         self.cmd = NonBlockingTkinterCommand(
             self,
             command=example_command,
-            before=lambda: self.button.disable(),
+            before=before,
             after=lambda: self.button.enable(),
             on_new_element_in_queue=on_new_element_in_queue,
         )
@@ -124,6 +144,8 @@ class App(ttk.Frame):
         self.button.pack()
         self.progress_bar = Progressbar(self)
         self.progress_bar.pack()
+        self.log = TextWithScrollbars(self)
+        self.log.pack()
 
 
 def _example():
