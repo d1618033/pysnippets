@@ -20,6 +20,24 @@ def example_command(progress):
 
 
 class Dispatcher:
+    """
+    Creates a callable object that runs functions on kw values.
+    e.g:
+    create some test functions:
+    >>> called = {}
+    >>> def f1(x): called['f1'] = x
+    >>> def f2(x): called['f2'] = x
+
+    create the dispatcher object:
+    >>> d = Dispatcher(f1=f1, f2=f2)
+
+    call it:
+    >>> d(f1=5, f2=7)
+    >>> called['f1']
+    5
+    >>> called['f2']
+    7
+    """
     def __init__(self, **name_to_func_dict):
         self.name_to_func_dict = name_to_func_dict
 
