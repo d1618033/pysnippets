@@ -124,7 +124,7 @@ class NonBlockingTkinterCommand:
         else:
             while not queue.empty():
                 elem = queue.get()
-                self.on_new_element_in_queue(elem)
+                self.on_new_element_in_queue(**elem)
             self.master.after(self.poll_time, self._poll, queue, process)
 
 
