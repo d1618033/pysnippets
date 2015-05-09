@@ -20,11 +20,10 @@ def example_command(progress):
 
 
 class Dispatcher:
-    def __init__(self, name_to_func_dict):
+    def __init__(self, **name_to_func_dict):
         self.name_to_func_dict = name_to_func_dict
 
-    def __call__(self, dictionary):
-        print(dictionary)
+    def __call__(self, **dictionary):
         for key, value in dictionary.items():
             if key in self.name_to_func_dict:
                 self.name_to_func_dict[key](value)
@@ -153,11 +152,11 @@ class App(ttk.Frame):
             command=example_command,
             before=before,
             after=lambda: self.button.enable(),
-            on_new_element_in_queue=Dispatcher({
-                'max': self.progress_bar.set_max,
-                'progress': self.progress_bar.set,
-                'log': self.log.append,
-            }),
+            on_new_element_in_queue=Dispatcher(
+                max=self.progress_bar.set_max,
+                progress=self.progress_bar.set,
+                log=self.log.append,
+            ),
         )
         self.button.config(command=self.cmd)
 
