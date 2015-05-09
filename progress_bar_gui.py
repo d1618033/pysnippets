@@ -142,7 +142,7 @@ class NonBlockingTkinterCommand:
         else:
             while not queue.empty():
                 elem = queue.get()
-                self.on_new_element_in_queue(**elem)
+                self.on_new_element_in_queue(elem)
             self.master.after(self.poll_time, self._poll, queue, process)
 
 
@@ -165,16 +165,17 @@ class App(ttk.Frame):
         self.progress_bar.pack()
         self.log = TextWithScrollbars(self, text_options={'width': 50})
         self.log.pack()
+        dispatcher = Dispatcher(
+            max=self.progress_bar.set_max,
+            progress=self.progress_bar.set,
+            log=self.log.append,
+        )
         self.cmd = NonBlockingTkinterCommand(
             self,
             command=example_command,
             before=before,
             after=lambda: self.button.enable(),
-            on_new_element_in_queue=Dispatcher(
-                max=self.progress_bar.set_max,
-                progress=self.progress_bar.set,
-                log=self.log.append,
-            ),
+            on_new_element_in_queue=lambda elem: dispatcher(**elem),
         )
         self.button.config(command=self.cmd)
 
