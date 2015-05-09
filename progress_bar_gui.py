@@ -13,9 +13,9 @@ def example_command(progress):
     """
     :param progress: progress function
     """
-    progress(max=50)
+    progress(dict(max=50))
     for i in range(50):
-        progress(progress=i+1, log="[{0}] got to: {1}".format(datetime.datetime.now(), i))
+        progress(dict(progress=i+1, log="[{0}] got to: {1}".format(datetime.datetime.now(), i)))
         time.sleep(0.05)
 
 
@@ -128,11 +128,9 @@ class NonBlockingTkinterCommand:
         """
         Run the command
         """
-        def progress_func(**kwargs):
-            queue.put(kwargs)
         self.before()
         queue = multiprocessing.Queue()
-        process = multiprocessing.Process(target=self.command, args=(progress_func,))
+        process = multiprocessing.Process(target=self.command, args=(queue.put,))
         process.start()
         self._poll(queue, process)
 
