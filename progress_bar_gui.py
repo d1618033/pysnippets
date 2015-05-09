@@ -8,7 +8,7 @@ import time
 import multiprocessing
 
 
-def command(progress_func):
+def example_command(progress_func):
     """
     :param progress_func: a function that updates the progress bar
      it expects to get as input a number between 0 and 100
@@ -39,37 +39,54 @@ class Button(ttk.Button):
         self.config(state=tkinter.NORMAL)
 
 
+class NonBlockingTkinterCommand:
+    def __init__(self, root, command, before, after, on_new_element_in_queue, poll_time=10):
+        self.root = root
+        self.command = command
+        self.before = before
+        self.after = after
+        self.on_new_element_in_queue = on_new_element_in_queue
+        self.poll_time = poll_time
+
+    def run(self):
+        self.before()
+        queue = multiprocessing.Queue()
+        process = multiprocessing.Process(target=self.command, args=(queue.put,))
+        process.start()
+        self.poll(queue, process)
+
+    def poll(self, queue, process):
+        if not process.is_alive():
+            self.after()
+        else:
+            while not queue.empty():
+                elem = queue.get()
+                self.on_new_element_in_queue(elem)
+            self.root.after(self.poll_time, self.poll, queue, process)
+
+
 class App(ttk.Frame):
     def __init__(self, master, root):
         ttk.Frame.__init__(self, master=master)
-        self.add_widgets()
         self.root = root
+        self.add_widgets()
 
     def add_widgets(self):
+        self.cmd = NonBlockingTkinterCommand(
+            root=self.root,
+            command=example_command,
+            before=lambda: self.button.disable(),
+            after=lambda: self.button.enable(),
+            on_new_element_in_queue=lambda value: self.progress_bar.set(value),
+        )
         self.button = Button(
             self,
             text="Execute",
-            command=self.on_click
+            command=self.cmd.run
         )
         self.button.pack()
         self.progress_bar = Progressbar(self)
         self.progress_bar.pack()
-
-    def on_click(self):
-        self.button.disable()
-        queue = multiprocessing.Queue()
-        process = multiprocessing.Process(target=command, args=(queue.put,))
-        process.start()
-        self.poll_progress(queue, process)
-
-    def poll_progress(self, queue, process):
-        if not process.is_alive():
-            self.button.enable()
-        else:
-            while not queue.empty():
-                p = queue.get()
-                self.progress_bar.set(p)
-            self.root.after(10, self.poll_progress, queue, process)
 
 
 def _example():
