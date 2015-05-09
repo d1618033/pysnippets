@@ -41,6 +41,16 @@ class Button(ttk.Button):
 
 class NonBlockingTkinterCommand:
     def __init__(self, root, command, before, after, on_new_element_in_queue, poll_time=10):
+        """
+        :param root: The root tkinter object (i.e, tkinter.Tk())
+        :param command: The command to run. The command must take a single argument
+                        which will be a function to use to add to the queue.
+        :param before: A function with no arguments that will be executed before running the command.
+        :param after: A function with no arguments that will be executed after running the command.
+        :param on_new_element_in_queue: A function with one argument, that will be given the value
+                                        that was added in the queue.
+        :param poll_time: The time to wait between checks of the queue.
+        """
         self.root = root
         self.command = command
         self.before = before
@@ -49,20 +59,23 @@ class NonBlockingTkinterCommand:
         self.poll_time = poll_time
 
     def run(self):
+        """
+        Run the command
+        """
         self.before()
         queue = multiprocessing.Queue()
         process = multiprocessing.Process(target=self.command, args=(queue.put,))
         process.start()
-        self.poll(queue, process)
+        self._poll(queue, process)
 
-    def poll(self, queue, process):
+    def _poll(self, queue, process):
         if not process.is_alive():
             self.after()
         else:
             while not queue.empty():
                 elem = queue.get()
                 self.on_new_element_in_queue(elem)
-            self.root.after(self.poll_time, self.poll, queue, process)
+            self.root.after(self.poll_time, self._poll, queue, process)
 
 
 class App(ttk.Frame):
