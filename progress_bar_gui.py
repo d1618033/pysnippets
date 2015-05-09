@@ -106,7 +106,7 @@ class NonBlockingTkinterCommand:
         self.on_new_element_in_queue = on_new_element_in_queue
         self.poll_time = poll_time
 
-    def run(self):
+    def __call__(self):
         """
         Run the command
         """
@@ -158,7 +158,7 @@ class App(ttk.Frame):
                 log=self.log.append,
             ),
         )
-        self.button.config(command=self.cmd.run)
+        self.button.config(command=self.cmd)
 
 
 def _example():
