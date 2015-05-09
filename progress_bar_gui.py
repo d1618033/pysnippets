@@ -1,3 +1,7 @@
+"""
+A simple example of a tkinter app with a progress bar
+"""
+
 import tkinter
 from tkinter import ttk
 import time
@@ -5,6 +9,10 @@ import multiprocessing
 
 
 def command(progress_func):
+    """
+    :param progress_func: a function that updates the progress bar
+     it expects to get as input a number between 0 and 100
+    """
     for i in range(100):
         progress_func(i+1)
         time.sleep(0.01)
