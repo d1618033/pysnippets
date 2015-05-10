@@ -52,19 +52,14 @@ class TestInfiniteFib:
         raise NotImplementedError
 
     def assert_is_fib_sequence(self, n):
-        prev1 = None
-        prev2 = None
-        for i, elem in enumerate(take(self.get_result(), n)):
-            with self.subTest(i=i):
-                if prev1 is None:
-                    prev1 = elem
-                    self.assertEqual(elem, 0)
-                elif prev2 is None:
-                    prev2 = elem
-                    self.assertEqual(elem, 1)
-                else:
-                    self.assertEqual(elem, prev1 + prev2)
-                    prev1, prev2 = prev2, elem
+        a, b = 0, 1
+        actual = take(self.get_result(), n)
+        self.assertEqual(next(actual), a)
+        self.assertEqual(next(actual), b)
+        for i, elem in enumerate(actual):
+            with self.subTest(i=i+2):
+                a, b = b, a + b
+                self.assertEqual(elem, b)
 
     def test_10_items(self):
         self.assert_is_fib_sequence(10)
