@@ -1,4 +1,5 @@
 from operator import add
+import itertools
 
 
 def itertive_infinite_fib():
@@ -23,4 +24,5 @@ def zip_with(func, elems1, elems2):
 def recursive_infinite_fib():
     yield 0
     yield 1
-    yield from zip_with(add, recursive_infinite_fib(), tail(recursive_infinite_fib()))
+    f1, f2 = itertools.tee(recursive_infinite_fib(), 2)
+    yield from zip_with(add, f1, tail(f2))

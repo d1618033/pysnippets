@@ -64,7 +64,7 @@ class TestInfiniteFib:
     def test_10_items(self):
         self.assert_is_fib_sequence(10)
 
-    def test_15_items(self):
+    def test_100_items(self):
         self.assert_is_fib_sequence(15)
 
 
