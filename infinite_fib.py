@@ -5,3 +5,14 @@ def itertive_infinite_fib():
     while True:
         a, b = b, a + b
         yield b
+
+
+def recursive_infinite_fib():
+    yield 0
+    yield 1
+    prevs = recursive_infinite_fib()
+    afters = recursive_infinite_fib()
+    next(afters)
+    for prev, after in zip(prevs, afters):
+        yield prev + after
+
