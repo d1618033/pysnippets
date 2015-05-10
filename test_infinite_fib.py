@@ -54,16 +54,17 @@ class TestInfiniteFib:
     def assert_is_fib_sequence(self, n):
         prev1 = None
         prev2 = None
-        for elem in take(self.get_result(), n):
-            if prev1 is None:
-                prev1 = elem
-                assert elem == 0
-            elif prev2 is None:
-                prev2 = elem
-                assert elem == 1
-            else:
-                assert elem == prev1 + prev2
-                prev1, prev2 = prev2, elem
+        for i, elem in enumerate(take(self.get_result(), n)):
+            with self.subTest(i=i):
+                if prev1 is None:
+                    prev1 = elem
+                    self.assertEqual(elem, 0)
+                elif prev2 is None:
+                    prev2 = elem
+                    self.assertEqual(elem, 1)
+                else:
+                    self.assertEqual(elem, prev1 + prev2)
+                    prev1, prev2 = prev2, elem
 
     def test_10_items(self):
         self.assert_is_fib_sequence(10)
@@ -75,3 +76,8 @@ class TestInfiniteFib:
 class TestIterativeInfiniteFib(unittest.TestCase, TestInfiniteFib):
     def get_result(self):
         return infinite_fib.itertive_infinite_fib()
+
+
+class TestRecursiveInfiniteFib(unittest.TestCase, TestInfiniteFib):
+    def get_result(self):
+        return infinite_fib.recursive_infinite_fib()
