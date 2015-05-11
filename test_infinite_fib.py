@@ -1,5 +1,6 @@
 import infinite_fib
 import unittest
+from unittest import mock
 
 
 def take(elems, n):
@@ -76,3 +77,14 @@ class TestIterativeInfiniteFib(unittest.TestCase, TestInfiniteFib):
 class TestRecursiveInfiniteFib(unittest.TestCase, TestInfiniteFib):
     def get_result(self):
         return infinite_fib.recursive_infinite_fib()
+
+
+class TestZipWith(unittest.TestCase):
+    def test_same_size_elems(self):
+        x = range(3)
+        y = range(4, 7)
+        func = mock.MagicMock()
+        list(infinite_fib.zip_with(func, x, y))
+        self.assertEqual(func.call_args_list[0][0], (0, 4))
+        self.assertEqual(func.call_args_list[1][0], (1, 5))
+        self.assertEqual(func.call_args_list[2][0], (2, 6))
