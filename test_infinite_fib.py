@@ -83,8 +83,9 @@ class TestZipWith(unittest.TestCase):
     def test_same_size_elems(self):
         x = range(3)
         y = range(4, 7)
-        func = mock.MagicMock()
-        list(infinite_fib.zip_with(func, x, y))
+        func = mock.MagicMock(side_effect=lambda x, y: x*y)
+        actual = list(infinite_fib.zip_with(func, x, y))
         self.assertEqual(func.call_args_list[0][0], (0, 4))
         self.assertEqual(func.call_args_list[1][0], (1, 5))
         self.assertEqual(func.call_args_list[2][0], (2, 6))
+        self.assertEqual(actual, [0, 5, 12])
