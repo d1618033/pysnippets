@@ -12,11 +12,13 @@ def itertive_infinite_fib():
 
 
 def tail(gen):
+    """returns all the elements in the generator excluding first element"""
     next(gen)
     return gen
 
 
 def zip_with(func, elems1, elems2):
+    """executes func on pairs of elements from elems1 and elems2"""
     for elem1, elem2 in zip(elems1, elems2):
         yield func(elem1, elem2)
 
