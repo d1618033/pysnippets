@@ -20,7 +20,7 @@ class PointPlot:
             self.points_to_indices[point] = index
             self.indices_to_points.append(point)
 
-    def plot_index(self, index):
+    def highlight_index(self, index):
         if self.current_index is not None:
             self.indices_to_points[self.current_index].set_color('b')
         self.current_index = index
@@ -50,7 +50,7 @@ class LinePlot:
             self.points_to_indices[point] = index
             self.indices_to_points.append(point)
 
-    def plot_index(self, index):
+    def highlight_index(self, index):
         if self.current_index is not None:
             self.indices_to_points[self.current_index].set_color('b')
         self.current_index = index
@@ -73,16 +73,16 @@ class LinkedPlotsManager:
         artist = event.artist
         ax = artist.get_axes()
         index = self.axes_to_plot_objs[ax].get_index(artist)
-        self.plot_index(index)
+        self.highlight_index(index)
         self.fig.canvas.draw()
 
     def plot(self):
         for plot_obj in self.axes_to_plot_objs.values():
             plot_obj.plot()
 
-    def plot_index(self, index):
+    def highlight_index(self, index):
         for plot_obj in self.axes_to_plot_objs.values():
-            plot_obj.plot_index(index)
+            plot_obj.highlight_index(index)
 
 
 def demo():
