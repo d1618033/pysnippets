@@ -50,7 +50,7 @@ class PointPlot(BasePlot):
     def plot_index(self, index):
         return self.ax.plot([self.point_data[index, 0]],
                             [self.point_data[index, 1]],
-                            [self.point_data[index, 2]], 'bo', picker=5)[0]
+                            [self.point_data[index, 2]], 'bo', picker=20)[0]
 
     def highlight_point(self, point):
         point.set_color('r')
@@ -69,7 +69,7 @@ class LinePlot(BasePlot):
         BasePlot.__init__(self, ax)
 
     def plot_index(self, index):
-        return self.ax.plot(self.t, self.line_data[index, :], 'b-', picker=5)[0]
+        return self.ax.plot(self.t, self.line_data[index, :], 'b-', picker=10)[0]
 
     def highlight_point(self, point):
         point.set_color('r')
