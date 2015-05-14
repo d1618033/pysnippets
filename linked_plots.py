@@ -2,9 +2,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 
-class PointPlot:
-    def __init__(self, point_data, ax):
-        self.point_data = point_data
+class BasePlot:
+    def __init__(self, ax):
         self.ax = ax
         self.current_index = None
         self.points_to_indices = {}
@@ -13,60 +12,73 @@ class PointPlot:
     def plot(self):
         self.points_to_indices = {}
         self.indices_to_points = []
-        for index in range(len(self.point_data)):
+        for index in range(self.num_points()):
             point = self.plot_index(index)
             self.points_to_indices[point] = index
             self.indices_to_points.append(point)
+
+    def plot_index(self, index):
+        raise NotImplementedError
+
+    def dehighlight_point(self, point):
+        raise NotImplementedError
+
+    def highlight_point(self, point):
+        raise NotImplementedError
+
+    def highlight_index(self, index):
+        if self.current_index is not None:
+            self.dehighlight_point(self.indices_to_points[self.current_index])
+        self.current_index = index
+        self.highlight_point(self.indices_to_points[self.current_index])
+
+    def get_index(self, point):
+        return self.points_to_indices[point]
+
+    def get_axes(self):
+        return self.ax
+
+    def num_points(self):
+        raise NotImplementedError
+
+
+class PointPlot(BasePlot):
+    def __init__(self, point_data, ax):
+        self.point_data = point_data
+        BasePlot.__init__(self, ax)
 
     def plot_index(self, index):
         return self.ax.plot([self.point_data[index, 0]],
                             [self.point_data[index, 1]],
                             [self.point_data[index, 2]], 'bo', picker=5)[0]
 
-    def highlight_index(self, index):
-        if self.current_index is not None:
-            self.indices_to_points[self.current_index].set_color('b')
-        self.current_index = index
-        self.indices_to_points[self.current_index].set_color('r')
+    def highlight_point(self, point):
+        point.set_color('r')
 
-    def get_index(self, point):
-        return self.points_to_indices[point]
+    def dehighlight_point(self, point):
+        point.set_color('b')
 
-    def get_axes(self):
-        return self.ax
+    def num_points(self):
+        return self.point_data.shape[0]
 
 
-class LinePlot:
+class LinePlot(BasePlot):
     def __init__(self, t, line_data, ax):
         self.line_data = line_data
         self.t = t
-        self.ax = ax
-        self.current_index = None
-        self.points_to_indices = {}
-        self.indices_to_points = []
-
-    def plot(self):
-        self.points_to_indices = {}
-        self.indices_to_points = []
-        for index in range(len(self.line_data)):
-            point = self.plot_index(index)
-            self.points_to_indices[point] = index
-            self.indices_to_points.append(point)
+        BasePlot.__init__(self, ax)
 
     def plot_index(self, index):
         return self.ax.plot(self.t, self.line_data[index, :], 'b-', picker=5)[0]
 
-    def highlight_index(self, index):
-        if self.current_index is not None:
-            self.indices_to_points[self.current_index].set_color('b')
-        self.current_index = index
-        self.indices_to_points[self.current_index].set_color('r')
+    def highlight_point(self, point):
+        point.set_color('r')
 
-    def get_index(self, point):
-        return self.points_to_indices[point]
+    def dehighlight_point(self, point):
+        point.set_color('b')
 
-    def get_axes(self):
-        return self.ax
+    def num_points(self):
+        return self.line_data.shape[0]
 
 
 class LinkedPlotsManager:
