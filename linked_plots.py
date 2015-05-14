@@ -64,6 +64,7 @@ class LinkedPlotsManager:
     def __init__(self, fig, plot_objs):
         self.axes_to_plot_objs = {plot_obj.get_axes(): plot_obj for plot_obj in plot_objs}
         self.fig = fig
+        fig.canvas.mpl_connect('pick_event', self.onevent)
 
     def onevent(self, event):
         artist = event.artist
@@ -91,7 +92,6 @@ def demo():
     point_plot = PointPlot(point_data, ax1)
     line_plot = LinePlot(t, line_data, ax2)
     linked_plots = LinkedPlotsManager(fig, [point_plot, line_plot])
-    fig.canvas.mpl_connect('pick_event', linked_plots.onevent)
     linked_plots.plot()
     plt.show()
 
