@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 class PointPlot:
@@ -13,7 +14,9 @@ class PointPlot:
         self.points_to_indices = {}
         self.indices_to_points = []
         for index in range(len(self.point_data)):
-            point = self.ax.plot(self.point_data[index, 0], self.point_data[index, 1], 'bo', picker=5)[0]
+            point = self.ax.plot([self.point_data[index, 0]],
+                                 [self.point_data[index, 1]],
+                                 [self.point_data[index, 2]], 'bo', picker=5)[0]
             self.points_to_indices[point] = index
             self.indices_to_points.append(point)
 
@@ -84,11 +87,13 @@ class LinkedPlotsManager:
 
 def demo():
     import numpy as np
-    point_data = np.array([[i, i] for i in range(10)])
+    point_data = np.array([[i, i*2, i+5] for i in range(10)])
     t = np.arange(5)
     line_data = point_data[:, 0].reshape(-1, 1) + point_data[:, 1].reshape(-1, 1) * t.reshape(1, -1)
 
-    fig, (ax1, ax2) = plt.subplots(ncols=2)
+    fig = plt.figure()
+    ax1 = plt.subplot(1, 2, 1, projection='3d')
+    ax2 = plt.subplot(1, 2, 2)
     point_plot = PointPlot(point_data, ax1)
     line_plot = LinePlot(t, line_data, ax2)
     linked_plots = LinkedPlotsManager(fig, [point_plot, line_plot])
