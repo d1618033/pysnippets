@@ -26,7 +26,7 @@ class BasePlot:
     def highlight_point(self, point):
         raise NotImplementedError
 
-    def highlight_index(self, index):
+    def on_index_change(self, index):
         if self.current_index is not None:
             self.dehighlight_point(self.indices_to_points[self.current_index])
         self.current_index = index
@@ -91,16 +91,16 @@ class LinkedPlotsManager:
         artist = event.artist
         ax = artist.get_axes()
         index = self.axes_to_plot_objs[ax].get_index(artist)
-        self.highlight_index(index)
+        self.on_index_change(index)
         self.fig.canvas.draw()
 
     def plot(self):
         for plot_obj in self.axes_to_plot_objs.values():
             plot_obj.plot()
 
-    def highlight_index(self, index):
+    def on_index_change(self, index):
         for plot_obj in self.axes_to_plot_objs.values():
-            plot_obj.highlight_index(index)
+            plot_obj.on_index_change(index)
 
 
 def demo():
