@@ -14,11 +14,14 @@ class PointPlot:
         self.points_to_indices = {}
         self.indices_to_points = []
         for index in range(len(self.point_data)):
-            point = self.ax.plot([self.point_data[index, 0]],
-                                 [self.point_data[index, 1]],
-                                 [self.point_data[index, 2]], 'bo', picker=5)[0]
+            point = self.plot_index(index)
             self.points_to_indices[point] = index
             self.indices_to_points.append(point)
+
+    def plot_index(self, index):
+        return self.ax.plot([self.point_data[index, 0]],
+                            [self.point_data[index, 1]],
+                            [self.point_data[index, 2]], 'bo', picker=5)[0]
 
     def highlight_index(self, index):
         if self.current_index is not None:
@@ -46,9 +49,12 @@ class LinePlot:
         self.points_to_indices = {}
         self.indices_to_points = []
         for index in range(len(self.line_data)):
-            point = self.ax.plot(self.t, self.line_data[index, :], 'b-', picker=5)[0]
+            point = self.plot_index(index)
             self.points_to_indices[point] = index
             self.indices_to_points.append(point)
+
+    def plot_index(self, index):
+        return self.ax.plot(self.t, self.line_data[index, :], 'b-', picker=5)[0]
 
     def highlight_index(self, index):
         if self.current_index is not None:
