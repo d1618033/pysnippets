@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from abc import abstractmethod, ABCMeta
 
 
-class BasePlot:
+class BasePlot(metaclass=ABCMeta):
     def __init__(self, ax):
         self.ax = ax
         self.current_index = None
@@ -17,12 +18,15 @@ class BasePlot:
             self.points_to_indices[point] = index
             self.indices_to_points.append(point)
 
+    @abstractmethod
     def plot_index(self, index):
         raise NotImplementedError
 
+    @abstractmethod
     def dehighlight_point(self, point):
         raise NotImplementedError
 
+    @abstractmethod
     def highlight_point(self, point):
         raise NotImplementedError
 
@@ -38,6 +42,7 @@ class BasePlot:
     def get_axes(self):
         return self.ax
 
+    @abstractmethod
     def num_points(self):
         raise NotImplementedError
 
