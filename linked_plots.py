@@ -9,12 +9,11 @@ class BasePlot(metaclass=ABCMeta):
         self.current_index = None
         self.points_to_indices = {}
         self.indices_to_points = []
-        self.indices_to_plot = []
 
     def plot(self):
         self.points_to_indices = {}
         self.indices_to_points = []
-        for index in self.indices_to_plot:
+        for index in self.indices_to_plot():
             point = self.plot_index(index)
             self.points_to_indices[point] = index
             self.indices_to_points.append(point)
@@ -43,13 +42,15 @@ class BasePlot(metaclass=ABCMeta):
     def get_axes(self):
         return self.ax
 
+    @abstractmethod
+    def indices_to_plot(self):
+        raise NotImplementedError
+
 
 class PointPlot(BasePlot):
     def __init__(self, point_data, ax):
         BasePlot.__init__(self, ax)
         self.point_data = point_data
-        self.indices_to_plot = list(range(self.point_data.shape[0]))
-
 
     def plot_index(self, index):
         return self.ax.plot([self.point_data[index, 0]],
@@ -62,14 +63,15 @@ class PointPlot(BasePlot):
     def dehighlight_point(self, point):
         point.set_color('b')
 
+    def indices_to_plot(self):
+        return range(self.point_data.shape[0])
+
 
 class LinePlot(BasePlot):
     def __init__(self, t, line_data, ax):
         BasePlot.__init__(self, ax)
         self.line_data = line_data
         self.t = t
-        self.indices_to_plot = list(range(self.line_data.shape[0]))
-
 
     def plot_index(self, index):
         return self.ax.plot(self.t, self.line_data[index, :], 'b-', picker=10)[0]
@@ -82,6 +84,9 @@ class LinePlot(BasePlot):
 
     def num_points(self):
         return self.line_data.shape[0]
+
+    def indices_to_plot(self):
+        return range(self.line_data.shape[0])
 
 
 class LinkedPlotsManager:
