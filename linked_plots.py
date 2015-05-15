@@ -1,16 +1,17 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from abc import abstractmethod, ABCMeta
+from typing import Iterable, Dict
 
 
 class BasePlot(metaclass=ABCMeta):
-    def __init__(self, ax):
+    def __init__(self, ax: plt.Axes):
         self.ax = ax
         self.current_index = None
         self.points_to_indices = {}
         self.indices_to_points = []
 
-    def plot(self):
+    def plot(self) -> None:
         self.points_to_indices = {}
         self.indices_to_points = []
         for index in self.indices_to_plot():
@@ -19,31 +20,31 @@ class BasePlot(metaclass=ABCMeta):
             self.indices_to_points.append(point)
 
     @abstractmethod
-    def plot_index(self, index):
+    def plot_index(self, index: int) -> plt.Artist:
         raise NotImplementedError
 
     @abstractmethod
-    def dehighlight_point(self, point):
+    def dehighlight_point(self, point: plt.Artist) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def highlight_point(self, point):
+    def highlight_point(self, point: plt.Artist) -> None:
         raise NotImplementedError
 
-    def on_index_change(self, index):
+    def on_index_change(self, index: int) -> None:
         if self.current_index is not None:
             self.dehighlight_point(self.indices_to_points[self.current_index])
         self.current_index = index
         self.highlight_point(self.indices_to_points[self.current_index])
 
-    def get_index(self, point):
+    def get_index(self, point: plt.Artist) -> int:
         return self.points_to_indices[point]
 
-    def get_axes(self):
+    def get_axes(self) -> plt.Axes:
         return self.ax
 
     @abstractmethod
-    def indices_to_plot(self):
+    def indices_to_plot(self) -> Iterable[int]:
         raise NotImplementedError
 
 
@@ -90,23 +91,25 @@ class LinePlot(BasePlot):
 
 
 class LinkedPlotsManager:
-    def __init__(self, fig, plot_objs):
+    def __init__(self, plot_objs: Iterable[BasePlot]) -> None:
         self.axes_to_plot_objs = {plot_obj.get_axes(): plot_obj for plot_obj in plot_objs}
-        self.fig = fig
-        fig.canvas.mpl_connect('pick_event', self.onevent)
+        figs = set([axes.figure for axes in self.axes_to_plot_objs.keys()])
+        assert len(figs) == 1, "All plot objects must be in the same figure"
+        self.fig = figs.pop()
+        self.fig.canvas.mpl_connect('pick_event', self.onevent)
 
-    def onevent(self, event):
+    def onevent(self, event) -> None:
         artist = event.artist
         ax = artist.get_axes()
         index = self.axes_to_plot_objs[ax].get_index(artist)
         self.on_index_change(index)
         self.fig.canvas.draw()
 
-    def plot(self):
+    def plot(self) -> None:
         for plot_obj in self.axes_to_plot_objs.values():
             plot_obj.plot()
 
-    def on_index_change(self, index):
+    def on_index_change(self, index: int) -> None:
         for plot_obj in self.axes_to_plot_objs.values():
             plot_obj.on_index_change(index)
 
@@ -117,12 +120,11 @@ def demo():
     t = np.arange(5)
     line_data = point_data[:, 0].reshape(-1, 1) + point_data[:, 1].reshape(-1, 1) * t.reshape(1, -1)
 
-    fig = plt.figure()
     ax1 = plt.subplot(1, 2, 1, projection='3d')
     ax2 = plt.subplot(1, 2, 2)
     point_plot = PointPlot(point_data, ax1)
     line_plot = LinePlot(t, line_data, ax2)
-    linked_plots = LinkedPlotsManager(fig, [point_plot, line_plot])
+    linked_plots = LinkedPlotsManager([point_plot, line_plot])
     linked_plots.plot()
     plt.show()
 
