@@ -1,11 +1,10 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from abc import abstractmethod, ABCMeta
-from typing import Iterable, Dict
 
 
 class BasePlot(metaclass=ABCMeta):
-    def __init__(self, ax: plt.Axes):
+    def __init__(self, ax: plt.Axes) -> None:
         self.ax = ax
         self.current_index = None
         self.points_to_indices = {}
@@ -40,59 +39,59 @@ class BasePlot(metaclass=ABCMeta):
     def get_index(self, point: plt.Artist) -> int:
         return self.points_to_indices[point]
 
-    def get_axes(self) -> plt.Axes:
+    @property
+    def axes(self) -> plt.Axes:
         return self.ax
 
     @abstractmethod
-    def indices_to_plot(self) -> Iterable[int]:
+    def indices_to_plot(self) -> "Iterable[int]":
         raise NotImplementedError
 
 
 class PointPlot(BasePlot):
-    def __init__(self, point_data, ax):
+    def __init__(self, point_data: "numpy.ndarray", ax: plt.Axes) -> None:
         BasePlot.__init__(self, ax)
         self.point_data = point_data
 
-    def plot_index(self, index):
+    def plot_index(self, index: int) -> None:
         return self.ax.plot([self.point_data[index, 0]],
                             [self.point_data[index, 1]],
                             [self.point_data[index, 2]], 'bo', picker=20)[0]
 
-    def highlight_point(self, point):
+    def highlight_point(self, point: plt.Artist) -> None:
         point.set_color('r')
 
-    def dehighlight_point(self, point):
+    def dehighlight_point(self, point: plt.Artist) -> None:
         point.set_color('b')
 
-    def indices_to_plot(self):
+    def indices_to_plot(self) -> int:
         return range(self.point_data.shape[0])
 
 
 class LinePlot(BasePlot):
-    def __init__(self, t, line_data, ax):
+    def __init__(self, t: "numpy.ndarray", line_data: "numpy.ndarray", ax: plt.Axes):
         BasePlot.__init__(self, ax)
         self.line_data = line_data
         self.t = t
 
-    def plot_index(self, index):
+    def plot_index(self, index: int) -> plt.Artist:
         return self.ax.plot(self.t, self.line_data[index, :], 'b-', picker=10)[0]
 
-    def highlight_point(self, point):
+    def highlight_point(self, point: plt.Artist) -> None:
         point.set_color('r')
 
-    def dehighlight_point(self, point):
+    def dehighlight_point(self, point: plt.Artist) -> None:
         point.set_color('b')
 
-    def num_points(self):
-        return self.line_data.shape[0]
-
-    def indices_to_plot(self):
+    def indices_to_plot(self) -> "Iterable[int]":
         return range(self.line_data.shape[0])
 
 
 class LinkedPlotsManager:
-    def __init__(self, plot_objs: Iterable[BasePlot]) -> None:
-        self.axes_to_plot_objs = {plot_obj.get_axes(): plot_obj for plot_obj in plot_objs}
+    def __init__(self, plot_objs: "Iterable[BasePlot]") -> None:
+        self.axes_to_plot_objs = {
+            plot_obj.axes: plot_obj for plot_obj in plot_objs
+        }  # type: Dict[plt.Axes, BasePlot]
         figs = set([axes.figure for axes in self.axes_to_plot_objs.keys()])
         assert len(figs) == 1, "All plot objects must be in the same figure"
         self.fig = figs.pop()
@@ -100,7 +99,7 @@ class LinkedPlotsManager:
 
     def onevent(self, event) -> None:
         artist = event.artist
-        ax = artist.get_axes()
+        ax = artist.axes
         index = self.axes_to_plot_objs[ax].get_index(artist)
         self.on_index_change(index)
         self.fig.canvas.draw()
