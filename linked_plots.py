@@ -93,24 +93,23 @@ class LinkedPlotsManager:
             plot_obj.axes: plot_obj for plot_obj in plot_objs
         }  # type: Dict[plt.Axes, BasePlot]
         figs = set([axes.figure for axes in self.axes_to_plot_objs.keys()])
-        assert len(figs) == 1, "All plot objects must be in the same figure"
-        self.fig = figs.pop()
-        self.fig.canvas.mpl_connect('pick_event', self.onevent)
+        for fig in figs:
+            fig.canvas.mpl_connect('pick_event', self.onevent)
 
     def onevent(self, event) -> None:
         artist = event.artist
         ax = artist.axes
         index = self.axes_to_plot_objs[ax].get_index(artist)
         self.on_index_change(index)
-        self.fig.canvas.draw()
 
     def plot(self) -> None:
         for plot_obj in self.axes_to_plot_objs.values():
             plot_obj.plot()
 
     def on_index_change(self, index: int) -> None:
-        for plot_obj in self.axes_to_plot_objs.values():
+        for ax, plot_obj in self.axes_to_plot_objs.items():
             plot_obj.on_index_change(index)
+            ax.figure.canvas.draw()
 
 
 def demo():
@@ -119,8 +118,8 @@ def demo():
     t = np.arange(5)
     line_data = point_data[:, 0].reshape(-1, 1) + point_data[:, 1].reshape(-1, 1) * t.reshape(1, -1)
 
-    ax1 = plt.subplot(1, 2, 1, projection='3d')
-    ax2 = plt.subplot(1, 2, 2)
+    _, ax1 = plt.subplots(subplot_kw=dict(projection='3d'))
+    _, ax2 = plt.subplots()
     point_plot = PointPlot(point_data, ax1)
     line_plot = LinePlot(t, line_data, ax2)
     linked_plots = LinkedPlotsManager([point_plot, line_plot])
