@@ -3,7 +3,21 @@ from mpl_toolkits.mplot3d import Axes3D
 from abc import abstractmethod, ABCMeta
 
 
-class BasePlot(metaclass=ABCMeta):
+class BaseLinkablePlot(metaclass=ABCMeta):
+    @abstractmethod
+    def plot(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_index(self, artist: plt.Artist) -> int:
+        raise NotImplementedError
+
+    @abstractmethod
+    def on_index_change(self, index: int) -> None:
+        raise NotImplementedError
+
+
+class BaseHighlightPlot(BaseLinkablePlot, metaclass=ABCMeta):
     def __init__(self, ax: plt.Axes) -> None:
         self.ax = ax
         self.current_index = None
@@ -48,9 +62,9 @@ class BasePlot(metaclass=ABCMeta):
         raise NotImplementedError
 
 
-class PointPlot(BasePlot):
+class PointHighlightPlot(BaseHighlightPlot):
     def __init__(self, point_data: "numpy.ndarray", ax: plt.Axes) -> None:
-        BasePlot.__init__(self, ax)
+        BaseHighlightPlot.__init__(self, ax)
         self.point_data = point_data
 
     def plot_index(self, index: int) -> None:
@@ -68,9 +82,9 @@ class PointPlot(BasePlot):
         return range(self.point_data.shape[0])
 
 
-class LinePlot(BasePlot):
+class LineHighlightPlot(BaseHighlightPlot):
     def __init__(self, t: "numpy.ndarray", line_data: "numpy.ndarray", ax: plt.Axes):
-        BasePlot.__init__(self, ax)
+        BaseHighlightPlot.__init__(self, ax)
         self.line_data = line_data
         self.t = t
 
@@ -88,7 +102,7 @@ class LinePlot(BasePlot):
 
 
 class LinkedPlotsManager:
-    def __init__(self, plot_objs: "Iterable[BasePlot]") -> None:
+    def __init__(self, plot_objs: "Iterable[BaseLinkablePlot]") -> None:
         self.axes_to_plot_objs = {
             plot_obj.axes: plot_obj for plot_obj in plot_objs
         }  # type: Dict[plt.Axes, BasePlot]
@@ -120,8 +134,8 @@ def demo():
 
     _, ax1 = plt.subplots(subplot_kw=dict(projection='3d'))
     _, ax2 = plt.subplots()
-    point_plot = PointPlot(point_data, ax1)
-    line_plot = LinePlot(t, line_data, ax2)
+    point_plot = PointHighlightPlot(point_data, ax1)
+    line_plot = LineHighlightPlot(t, line_data, ax2)
     linked_plots = LinkedPlotsManager([point_plot, line_plot])
     linked_plots.plot()
     plt.show()
