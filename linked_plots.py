@@ -74,9 +74,7 @@ class PointHighlightPlot(BaseHighlightPlot):
         self.point_data = point_data
 
     def plot_index(self, index: int) -> None:
-        return self.ax.plot([self.point_data[index, 0]],
-                            [self.point_data[index, 1]],
-                            [self.point_data[index, 2]], 'bo', picker=20)[0]
+        return self.ax.plot(*[(p,) for p in self.point_data[index, :]], color='b', marker='o', picker=20)[0]
 
     def highlight_point(self, point: plt.Artist) -> None:
         point.set_color('r')
