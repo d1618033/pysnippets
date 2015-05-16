@@ -5,7 +5,7 @@ from abc import abstractmethod, ABCMeta
 
 class BaseLinkablePlot(metaclass=ABCMeta):
     @abstractmethod
-    def plot(self) -> None:
+    def initialize_plot(self) -> None:
         raise NotImplementedError
 
     @abstractmethod
@@ -24,7 +24,7 @@ class BaseHighlightPlot(BaseLinkablePlot, metaclass=ABCMeta):
         self.points_to_indices = {}
         self.indices_to_points = []
 
-    def plot(self) -> None:
+    def initialize_plot(self) -> None:
         self.points_to_indices = {}
         self.indices_to_points = []
         for index in self.indices_to_plot():
@@ -118,7 +118,7 @@ class LinkedPlotsManager:
 
     def plot(self) -> None:
         for plot_obj in self.axes_to_plot_objs.values():
-            plot_obj.plot()
+            plot_obj.initialize_plot()
 
     def on_index_change(self, index: int) -> None:
         for ax, plot_obj in self.axes_to_plot_objs.items():
