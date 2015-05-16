@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from abc import abstractmethod, ABCMeta
+from abc import abstractmethod, ABCMeta, abstractproperty
 
 
 class BaseLinkablePlot(metaclass=ABCMeta):
@@ -14,6 +14,10 @@ class BaseLinkablePlot(metaclass=ABCMeta):
 
     @abstractmethod
     def on_index_change(self, index: int) -> None:
+        raise NotImplementedError
+
+    @abstractproperty
+    def axes(self) -> plt.Axes:
         raise NotImplementedError
 
 
