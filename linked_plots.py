@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from abc import abstractmethod, ABCMeta, abstractproperty
+from tkinter import TclError
+import warnings
 
 
 class BaseLinkablePlot(metaclass=ABCMeta):
@@ -127,7 +129,10 @@ class LinkedPlotsManager:
     def on_index_change(self, index: int) -> None:
         for ax, plot_obj in self.axes_to_plot_objs.items():
             plot_obj.on_index_change(index)
-            ax.figure.canvas.draw()
+            try:
+                ax.figure.canvas.draw()
+            except TclError:
+                warnings.warn("Figure of plot_obj {0} is closed".format(plot_obj))
 
 
 def demo():
