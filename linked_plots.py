@@ -6,20 +6,38 @@ import warnings
 
 
 class BaseLinkablePlot(metaclass=ABCMeta):
+    """
+    A plot object that can be linked to other plots.
+    Every artist in the plot (e.g line, point, etc...) should have a unique index tied to it.
+    This unique index is exactly what ties this plot to the other plots.
+    """
     @abstractmethod
     def initialize_plot(self) -> None:
+        """
+        This is the method that's called when the plot is first shown.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def get_index(self, artist: plt.Artist) -> int:
+        """
+        This method is given an artist object that has been clicked
+        and returns the unique index of ths object.
+        """
         raise NotImplementedError
 
     @abstractmethod
     def on_index_change(self, index: int) -> None:
+        """
+        A callback function when an index changes in a different plot (or this plot)
+        """
         raise NotImplementedError
 
     @abstractproperty
     def axes(self) -> plt.Axes:
+        """
+        Returns the axes of this plot
+        """
         raise NotImplementedError
 
 
