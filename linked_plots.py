@@ -42,6 +42,9 @@ class BaseLinkablePlot(metaclass=ABCMeta):
 
 
 class BaseHighlightPlot(BaseLinkablePlot, metaclass=ABCMeta):
+    """
+    A linkable plot that highlights the artist when selected
+    """
     def __init__(self, ax: plt.Axes) -> None:
         self.ax = ax
         self.current_index = None
@@ -61,18 +64,18 @@ class BaseHighlightPlot(BaseLinkablePlot, metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def dehighlight_point(self, point: plt.Artist) -> None:
+    def dehighlight_artist(self, artist: plt.Artist) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    def highlight_point(self, point: plt.Artist) -> None:
+    def highlight_artist(self, artist: plt.Artist) -> None:
         raise NotImplementedError
 
     def on_index_change(self, index: int) -> None:
         if self.current_index is not None:
-            self.dehighlight_point(self.indices_to_points[self.current_index])
+            self.dehighlight_artist(self.indices_to_points[self.current_index])
         self.current_index = index
-        self.highlight_point(self.indices_to_points[self.current_index])
+        self.highlight_artist(self.indices_to_points[self.current_index])
 
     def get_index(self, point: plt.Artist) -> int:
         return self.points_to_indices[point]
@@ -94,11 +97,11 @@ class PointHighlightPlot(BaseHighlightPlot):
     def plot_index(self, index: int) -> None:
         return self.ax.plot(*[(p,) for p in self.point_data[index, :]], color='b', marker='o', picker=20)[0]
 
-    def highlight_point(self, point: plt.Artist) -> None:
-        point.set_color('r')
+    def highlight_artist(self, artist: plt.Artist) -> None:
+        artist.set_color('r')
 
-    def dehighlight_point(self, point: plt.Artist) -> None:
-        point.set_color('b')
+    def dehighlight_artist(self, artist: plt.Artist) -> None:
+        artist.set_color('b')
 
     def indices_to_plot(self) -> int:
         return range(self.point_data.shape[0])
@@ -113,11 +116,11 @@ class LineHighlightPlot(BaseHighlightPlot):
     def plot_index(self, index: int) -> plt.Artist:
         return self.ax.plot(self.t, self.line_data[index, :], 'b-', picker=10)[0]
 
-    def highlight_point(self, point: plt.Artist) -> None:
-        point.set_color('r')
+    def highlight_artist(self, artist: plt.Artist) -> None:
+        artist.set_color('r')
 
-    def dehighlight_point(self, point: plt.Artist) -> None:
-        point.set_color('b')
+    def dehighlight_artist(self, artist: plt.Artist) -> None:
+        artist.set_color('b')
 
     def indices_to_plot(self) -> "Iterable[int]":
         return range(self.line_data.shape[0])
