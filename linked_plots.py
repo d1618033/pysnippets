@@ -47,6 +47,8 @@ class BaseHighlightPlot(BaseLinkablePlot, metaclass=ABCMeta):
     """
     def __init__(self, ax: plt.Axes) -> None:
         self.ax = ax
+        # Keep track of the current selected index
+        # so that when an index changes we can dehighlight the previous index
         self.current_index = None
         self.points_to_indices = {}
         self.indices_to_points = []
