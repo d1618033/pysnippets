@@ -41,6 +41,31 @@ class BaseLinkablePlot(metaclass=ABCMeta):
         raise NotImplementedError
 
 
+class BasePartialPlot(BaseLinkablePlot):
+    def __init__(self, ax, other_indices_func):
+        self.ax = ax
+        self.other_indices_func = other_indices_func
+        self.points_to_indices = {}
+        self.indices_to_points = []
+
+    def get_index(self, artist: plt.Artist):
+        return self.points_to_indices[artist]
+
+    def on_index_change(self, index: int):
+        self.ax.clear()
+        self.indices_to_points = {}
+        self.points_to_indices = {}
+        self.indices_to_points[index] = self.plot_index(index)
+        for other_index in self.other_indices_func(index):
+            point = self.plot_index(other_index)
+            self.indices_to_points[other_index] = point
+            self.points_to_indices[point] = other_index
+
+    @abstractmethod
+    def plot_index(self, index):
+        raise NotImplementedError
+
+
 class BaseHighlightPlot(BaseLinkablePlot, metaclass=ABCMeta):
     """
     A linkable plot that highlights the artist when selected
