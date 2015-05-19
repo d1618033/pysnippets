@@ -5,6 +5,41 @@ from tkinter import TclError
 import warnings
 
 
+class Data(metaclass=ABCMeta):
+    @abstractmethod
+    def plot_index(self, ax):
+        raise NotImplementedError
+
+    @abstractproperty
+    def indices(self):
+        raise NotImplementedError
+
+
+class PointData(Data):
+    def __init__(self, point_data):
+        self.point_data = point_data
+
+    def plot_index(self, ax, index):
+        return ax.plot(*[(p,) for p in self.point_data[index, :]], color='b', marker='o', picker=20)[0]
+
+    @property
+    def indices(self):
+        return list(range(self.point_data.shape[0]))
+
+
+class LineData(Data):
+    def __init__(self, t, line_data):
+        self.t = t
+        self.line_data = line_data
+
+    def plot_index(self, ax, index):
+        return ax.plot(self.t, self.line_data[index, :], 'b-', picker=10)[0]
+
+    @property
+    def indices(self):
+        return list(range(self.line_data.shape[0]))
+
+
 class BaseLinkablePlot(metaclass=ABCMeta):
     """
     A plot object that can be linked to other plots.
@@ -66,12 +101,13 @@ class BasePartialPlot(BaseLinkablePlot):
         raise NotImplementedError
 
 
-class BaseHighlightPlot(BaseLinkablePlot, metaclass=ABCMeta):
+class HighlightPlot(BaseLinkablePlot):
     """
     A linkable plot that highlights the artist when selected
     """
-    def __init__(self, ax: plt.Axes) -> None:
+    def __init__(self, ax: plt.Axes, data: Data) -> None:
         self.ax = ax
+        self.data = data
         # Keep track of the current selected index
         # so that when an index changes we can dehighlight the previous index
         self.current_index = None
@@ -81,22 +117,16 @@ class BaseHighlightPlot(BaseLinkablePlot, metaclass=ABCMeta):
     def initialize_plot(self) -> None:
         self.points_to_indices = {}
         self.indices_to_points = []
-        for index in self.indices_to_plot():
-            point = self.plot_index(index)
+        for index in self.data.indices:
+            point = self.data.plot_index(self.ax, index)
             self.points_to_indices[point] = index
             self.indices_to_points.append(point)
 
-    @abstractmethod
-    def plot_index(self, index: int) -> plt.Artist:
-        raise NotImplementedError
-
-    @abstractmethod
     def dehighlight_artist(self, artist: plt.Artist) -> None:
-        raise NotImplementedError
+        artist.set_color('b')
 
-    @abstractmethod
     def highlight_artist(self, artist: plt.Artist) -> None:
-        raise NotImplementedError
+        artist.set_color('r')
 
     def on_index_change(self, index: int) -> None:
         if self.current_index is not None:
@@ -110,47 +140,6 @@ class BaseHighlightPlot(BaseLinkablePlot, metaclass=ABCMeta):
     @property
     def axes(self) -> plt.Axes:
         return self.ax
-
-    @abstractmethod
-    def indices_to_plot(self) -> "Iterable[int]":
-        raise NotImplementedError
-
-
-class PointHighlightPlot(BaseHighlightPlot):
-    def __init__(self, point_data: "numpy.ndarray", ax: plt.Axes) -> None:
-        BaseHighlightPlot.__init__(self, ax)
-        self.point_data = point_data
-
-    def plot_index(self, index: int) -> None:
-        return self.ax.plot(*[(p,) for p in self.point_data[index, :]], color='b', marker='o', picker=20)[0]
-
-    def highlight_artist(self, artist: plt.Artist) -> None:
-        artist.set_color('r')
-
-    def dehighlight_artist(self, artist: plt.Artist) -> None:
-        artist.set_color('b')
-
-    def indices_to_plot(self) -> int:
-        return range(self.point_data.shape[0])
-
-
-class LineHighlightPlot(BaseHighlightPlot):
-    def __init__(self, t: "numpy.ndarray", line_data: "numpy.ndarray", ax: plt.Axes):
-        BaseHighlightPlot.__init__(self, ax)
-        self.line_data = line_data
-        self.t = t
-
-    def plot_index(self, index: int) -> plt.Artist:
-        return self.ax.plot(self.t, self.line_data[index, :], 'b-', picker=10)[0]
-
-    def highlight_artist(self, artist: plt.Artist) -> None:
-        artist.set_color('r')
-
-    def dehighlight_artist(self, artist: plt.Artist) -> None:
-        artist.set_color('b')
-
-    def indices_to_plot(self) -> "Iterable[int]":
-        return range(self.line_data.shape[0])
 
 
 class LinkedPlotsManager:
@@ -189,8 +178,8 @@ def demo():
 
     _, ax1 = plt.subplots(subplot_kw=dict(projection='3d'))
     _, ax2 = plt.subplots()
-    point_plot = PointHighlightPlot(point_data, ax1)
-    line_plot = LineHighlightPlot(t, line_data, ax2)
+    point_plot = HighlightPlot(ax1, PointData(point_data))
+    line_plot = HighlightPlot(ax2, LineData(t, line_data))
     linked_plots = LinkedPlotsManager([point_plot, line_plot])
     linked_plots.plot()
     plt.show()
