@@ -76,29 +76,32 @@ class BaseLinkablePlot(metaclass=ABCMeta):
         raise NotImplementedError
 
 
-class BasePartialPlot(BaseLinkablePlot):
-    def __init__(self, ax, other_indices_func):
+class PartialPlot(BaseLinkablePlot):
+    def __init__(self, ax, other_indices_func, data):
         self.ax = ax
         self.other_indices_func = other_indices_func
+        self.data = data
         self.points_to_indices = {}
         self.indices_to_points = []
 
-    def get_index(self, artist: plt.Artist):
+    def initialize_plot(self) -> None:
+        pass
+
+    def get_index(self, artist: plt.Artist) -> int:
         return self.points_to_indices[artist]
 
-    def on_index_change(self, index: int):
+    def on_index_change(self, index: int) -> None:
         self.ax.clear()
         self.indices_to_points = {}
         self.points_to_indices = {}
         self.indices_to_points[index] = self.plot_index(index)
         for other_index in self.other_indices_func(index):
-            point = self.plot_index(other_index)
+            point = self.data.plot_index(other_index)
             self.indices_to_points[other_index] = point
             self.points_to_indices[point] = other_index
 
-    @abstractmethod
-    def plot_index(self, index):
-        raise NotImplementedError
+    def axes(self) -> plt.Axes:
+        return self.ax
 
 
 class HighlightPlot(BaseLinkablePlot):
