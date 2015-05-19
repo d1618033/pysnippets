@@ -79,8 +79,8 @@ class BaseHighlightPlot(BaseLinkablePlot, metaclass=ABCMeta):
         self.current_index = index
         self.highlight_artist(self.indices_to_points[self.current_index])
 
-    def get_index(self, point: plt.Artist) -> int:
-        return self.points_to_indices[point]
+    def get_index(self, artist: plt.Artist) -> int:
+        return self.points_to_indices[artist]
 
     @property
     def axes(self) -> plt.Axes:
