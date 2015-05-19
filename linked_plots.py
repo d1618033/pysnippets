@@ -97,9 +97,9 @@ class PartialPlot(BaseLinkablePlot):
         self.axes.clear()
         self.indices_to_points = {}
         self.points_to_indices = {}
-        self.indices_to_points[index] = self.plot_index(index)
+        self.indices_to_points[index] = self.data.plot_index(self.axes, index)
         for other_index in self.other_indices_func(index):
-            point = self.data.plot_index(other_index)
+            point = self.data.plot_index(self.axes, other_index)
             self.indices_to_points[other_index] = point
             self.points_to_indices[point] = other_index
 
@@ -170,15 +170,29 @@ class LinkedPlotsManager:
 
 
 def demo():
+    def closest_n_points(point, points, n):
+
+        points = np.asarray(points)
+        dist_2 = np.sum((points - point)**2, axis=1)
+        indices = np.argsort(dist_2)[:n+1]
+        return indices
+
+    def remove(array, elem):
+        return array[array != elem]
+
     import numpy as np
-    point_data = np.array([[i, i*2, i+5] for i in range(10)])
+    point_data = np.array([[i, i, i] for i in range(10)])
     t = np.arange(5)
-    line_data = point_data[:, 0].reshape(-1, 1) + point_data[:, 1].reshape(-1, 1) * t.reshape(1, -1)
+    line_data = point_data[:, 0].reshape(-1, 1) + np.ones(point_data.shape[0]).reshape(-1, 1) * t.reshape(1, -1)
 
     _, ax1 = plt.subplots(subplot_kw=dict(projection='3d'))
     _, ax2 = plt.subplots()
     point_plot = HighlightPlot(ax1, PointData(point_data))
-    line_plot = HighlightPlot(ax2, LineData(t, line_data))
+    line_plot = PartialPlot(
+        ax2,
+        lambda index: remove(closest_n_points(point_data[index, :], point_data, 2), index),
+        LineData(t, line_data)
+    )
     linked_plots = LinkedPlotsManager([point_plot, line_plot])
     linked_plots.plot()
     plt.show()
