@@ -7,36 +7,36 @@ import warnings
 
 class Data(metaclass=ABCMeta):
     @abstractmethod
-    def plot_index(self, ax):
+    def plot_index(self, ax: plt.Axes, index: int) -> plt.Artist:
         raise NotImplementedError
 
     @abstractproperty
-    def indices(self):
+    def indices(self) -> "Iterable[int]":
         raise NotImplementedError
 
 
 class PointData(Data):
-    def __init__(self, point_data):
+    def __init__(self, point_data: "numpy.ndarray") -> None:
         self.point_data = point_data
 
-    def plot_index(self, ax, index):
+    def plot_index(self, ax: plt.Axes, index: int) -> plt.Artist:
         return ax.plot(*[(p,) for p in self.point_data[index, :]], color='b', marker='o', picker=20)[0]
 
     @property
-    def indices(self):
+    def indices(self) -> "Iterable[int]":
         return list(range(self.point_data.shape[0]))
 
 
 class LineData(Data):
-    def __init__(self, t, line_data):
+    def __init__(self, t: "numpy.ndarray", line_data: "numpy.ndarray"):
         self.t = t
         self.line_data = line_data
 
-    def plot_index(self, ax, index):
+    def plot_index(self, ax: plt.Axes, index: int) -> plt.Artist:
         return ax.plot(self.t, self.line_data[index, :], 'b-', picker=10)[0]
 
     @property
-    def indices(self):
+    def indices(self) -> "Iterable[int]":
         return list(range(self.line_data.shape[0]))
 
 
