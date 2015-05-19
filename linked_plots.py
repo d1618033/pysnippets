@@ -46,6 +46,9 @@ class BaseLinkablePlot(metaclass=ABCMeta):
     Every artist in the plot (e.g line, point, etc...) should have a unique index tied to it.
     This unique index is exactly what ties this plot to the other plots.
     """
+    def __init__(self, ax: plt.Axes) -> None:
+        self.ax = ax
+
     @abstractmethod
     def initialize_plot(self) -> None:
         """
@@ -68,17 +71,17 @@ class BaseLinkablePlot(metaclass=ABCMeta):
         """
         raise NotImplementedError
 
-    @abstractproperty
+    @property
     def axes(self) -> plt.Axes:
         """
         Returns the axes of this plot
         """
-        raise NotImplementedError
+        return self.ax
 
 
 class PartialPlot(BaseLinkablePlot):
     def __init__(self, ax, other_indices_func, data):
-        self.ax = ax
+        BaseLinkablePlot.__init__(self, ax)
         self.other_indices_func = other_indices_func
         self.data = data
         self.points_to_indices = {}
@@ -91,7 +94,7 @@ class PartialPlot(BaseLinkablePlot):
         return self.points_to_indices[artist]
 
     def on_index_change(self, index: int) -> None:
-        self.ax.clear()
+        self.axes.clear()
         self.indices_to_points = {}
         self.points_to_indices = {}
         self.indices_to_points[index] = self.plot_index(index)
@@ -100,16 +103,13 @@ class PartialPlot(BaseLinkablePlot):
             self.indices_to_points[other_index] = point
             self.points_to_indices[point] = other_index
 
-    def axes(self) -> plt.Axes:
-        return self.ax
-
 
 class HighlightPlot(BaseLinkablePlot):
     """
     A linkable plot that highlights the artist when selected
     """
     def __init__(self, ax: plt.Axes, data: Data) -> None:
-        self.ax = ax
+        BaseLinkablePlot.__init__(self, ax)
         self.data = data
         # Keep track of the current selected index
         # so that when an index changes we can dehighlight the previous index
@@ -121,7 +121,7 @@ class HighlightPlot(BaseLinkablePlot):
         self.points_to_indices = {}
         self.indices_to_points = []
         for index in self.data.indices:
-            point = self.data.plot_index(self.ax, index)
+            point = self.data.plot_index(self.axes, index)
             self.points_to_indices[point] = index
             self.indices_to_points.append(point)
 
@@ -139,10 +139,6 @@ class HighlightPlot(BaseLinkablePlot):
 
     def get_index(self, artist: plt.Artist) -> int:
         return self.points_to_indices[artist]
-
-    @property
-    def axes(self) -> plt.Axes:
-        return self.ax
 
 
 class LinkedPlotsManager:
