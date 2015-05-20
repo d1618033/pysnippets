@@ -80,9 +80,9 @@ class BaseLinkablePlot(metaclass=ABCMeta):
 
 
 class PartialPlot(BaseLinkablePlot):
-    def __init__(self, ax, other_indices_func, data):
+    def __init__(self, ax, index_to_indices_func, data):
         BaseLinkablePlot.__init__(self, ax)
-        self.other_indices_func = other_indices_func
+        self.index_to_indices_func = index_to_indices_func
         self.data = data
         self.points_to_indices = {}
         self.indices_to_points = []
@@ -97,8 +97,7 @@ class PartialPlot(BaseLinkablePlot):
         self.axes.clear()
         self.indices_to_points = {}
         self.points_to_indices = {}
-        self.indices_to_points[index] = self.data.plot_index(self.axes, index)
-        for other_index in self.other_indices_func(index):
+        for other_index in self.index_to_indices_func(index):
             point = self.data.plot_index(self.axes, other_index)
             self.indices_to_points[other_index] = point
             self.points_to_indices[point] = other_index
@@ -171,14 +170,10 @@ class LinkedPlotsManager:
 
 def demo():
     def closest_n_points(point, points, n):
-
         points = np.asarray(points)
         dist_2 = np.sum((points - point)**2, axis=1)
         indices = np.argsort(dist_2)[:n+1]
         return indices
-
-    def remove(array, elem):
-        return array[array != elem]
 
     import numpy as np
     point_data = np.array([[i, i, i] for i in range(10)])
@@ -190,7 +185,7 @@ def demo():
     point_plot = HighlightPlot(ax1, PointData(point_data))
     line_plot = PartialPlot(
         ax2,
-        lambda index: remove(closest_n_points(point_data[index, :], point_data, 2), index),
+        lambda index: closest_n_points(point_data[index, :], point_data, 2),
         LineData(t, line_data)
     )
     linked_plots = LinkedPlotsManager([point_plot, line_plot])
