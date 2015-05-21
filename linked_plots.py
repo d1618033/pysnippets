@@ -101,6 +101,10 @@ class PartialPlot(BaseLinkablePlot):
             point = self.data.plot_index(self.axes, other_index)
             self.indices_to_points[other_index] = point
             self.points_to_indices[point] = other_index
+        self.highlight_index(self.indices_to_points[index])
+
+    def highlight_index(self, artist: plt.Artist):
+        artist.set_color('r')
 
 
 class HighlightPlot(BaseLinkablePlot):
