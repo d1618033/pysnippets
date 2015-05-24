@@ -1,6 +1,5 @@
 import re
 import inspect
-from copy import deepcopy
 
 
 def create_func(string):
