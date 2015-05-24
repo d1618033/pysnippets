@@ -15,6 +15,12 @@ class TestCreateFunc(unittest.TestCase):
         func = create_func(string)
         self.assertEqual(func(), 11)
 
+    def test_one_arg_wrong_num_args(self):
+        string = "2*#"
+        func = create_func(string)
+        self.assertRaises(TypeError, func, 1, 5)
+        self.assertRaises(TypeError, func)
+
     def test_one_arg(self):
         string = "2*#"
         func = create_func(string)

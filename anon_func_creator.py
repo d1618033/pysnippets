@@ -10,4 +10,11 @@ def create_func(string):
     if len(matches) == 0:
         def func():
             return eval(string, {}, caller_locals)
+    else:
+        num_args = max(map(lambda x: int(x) if x else 1, map(lambda x: x.replace('#', ''), matches)))
+
+        def func(*args):
+            if len(args) != num_args:
+                raise TypeError("func() takes {0} positional arguments but {1} was given".format(num_args, len(args)))
+
     return func
