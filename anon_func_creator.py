@@ -23,5 +23,15 @@ def create_func(string):
             for i, arg in enumerate(args):
                 new_locals['_{0}'.format(i+1)] = arg
             return eval(compiled_string, caller_globals, new_locals)
-    func.__name__ = string
-    return func
+
+    class Func:
+        def __str__(self):
+            return string
+
+        def __repr__(self):
+            return string
+
+        def __call__(self, *args):
+            return func(*args)
+
+    return Func()

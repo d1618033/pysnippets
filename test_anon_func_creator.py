@@ -49,10 +49,10 @@ class TestCreateFunc(unittest.TestCase):
         func = create_func(string)
         self.assertEqual(func(5), 6)
 
-    def test_func_name_is_string(self):
+    def test_func_repr_is_string(self):
         string = "_1 + 10"
         func = create_func(string)
-        self.assertEqual(string, func.__name__)
+        self.assertEqual(string, str(func))
 
     def test_speed_compared_to_eval(self):
         string = "10 + 1"
