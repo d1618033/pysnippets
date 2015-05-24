@@ -1,5 +1,6 @@
 import re
 import inspect
+from copy import deepcopy
 
 
 def create_func(string):
@@ -16,5 +17,10 @@ def create_func(string):
         def func(*args):
             if len(args) != num_args:
                 raise TypeError("func() takes {0} positional arguments but {1} was given".format(num_args, len(args)))
+            new_locals = caller_locals
+            new_locals['_'] = args[0]
+            for i, arg in enumerate(args):
+                new_locals['_{0}'.format(i+1)] = arg
+            return eval(string, {}, new_locals)
 
     return func
