@@ -27,3 +27,10 @@ class TestCreateFunc(unittest.TestCase):
         self.assertEqual(func(1), 2)
         self.assertEqual(func(5), 10)
         self.assertEqual(func(-5), -10)
+
+    def test_two_args(self):
+        string = "2*_1 + _2"
+        func = create_func(string)
+        self.assertEqual(func(1, 6), 8)
+        self.assertEqual(func(5, 7), 17)
+        self.assertEqual(func(-5, 3), -7)
