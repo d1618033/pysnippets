@@ -14,3 +14,10 @@ class TestCreateFunc(unittest.TestCase):
         string = "x+1"
         func = create_func(string)
         self.assertEqual(func(), 11)
+
+    def test_one_arg(self):
+        string = "2*#"
+        func = create_func(string)
+        self.assertEqual(func(1), 2)
+        self.assertEqual(func(5), 10)
+        self.assertEqual(func(-5), -10)
