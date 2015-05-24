@@ -47,3 +47,8 @@ class TestCreateFunc(unittest.TestCase):
         string = "_1 + math.cos(0)"
         func = create_func(string)
         self.assertEqual(func(5), 6)
+
+    def test_func_name_is_string(self):
+        string = "_1 + 10"
+        func = create_func(string)
+        self.assertEqual(string, func.__name__)

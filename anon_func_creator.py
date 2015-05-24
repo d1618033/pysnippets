@@ -22,5 +22,5 @@ def create_func(string):
             for i, arg in enumerate(args):
                 new_locals['_{0}'.format(i+1)] = arg
             return eval(string, caller_globals, new_locals)
-
+    func.__name__ = string
     return func
