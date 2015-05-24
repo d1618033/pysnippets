@@ -16,13 +16,13 @@ class TestCreateFunc(unittest.TestCase):
         self.assertEqual(func(), 11)
 
     def test_one_arg_wrong_num_args(self):
-        string = "2*#"
+        string = "2*_"
         func = create_func(string)
         self.assertRaises(TypeError, func, 1, 5)
         self.assertRaises(TypeError, func)
 
     def test_one_arg(self):
-        string = "2*#"
+        string = "2*_"
         func = create_func(string)
         self.assertEqual(func(1), 2)
         self.assertEqual(func(5), 10)

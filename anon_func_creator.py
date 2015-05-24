@@ -3,7 +3,7 @@ import inspect
 
 
 def create_func(string):
-    matches = re.findall('#\d*', string)
+    matches = re.findall('_\d*', string)
     curframe = inspect.currentframe()
     calframe = inspect.getouterframes(curframe, 2)
     caller_locals = calframe[1][0].f_locals
@@ -11,7 +11,7 @@ def create_func(string):
         def func():
             return eval(string, {}, caller_locals)
     else:
-        num_args = max(map(lambda x: int(x) if x else 1, map(lambda x: x.replace('#', ''), matches)))
+        num_args = max(map(lambda x: int(x) if x else 1, map(lambda x: x.replace('_', ''), matches)))
 
         def func(*args):
             if len(args) != num_args:
