@@ -34,3 +34,10 @@ class TestCreateFunc(unittest.TestCase):
         self.assertEqual(func(1, 6), 8)
         self.assertEqual(func(5, 7), 17)
         self.assertEqual(func(-5, 3), -7)
+
+    def test_scope_is_not_overwritten(self):
+        _1 = 5
+        string = "_1 + 10"
+        func = create_func(string)
+        self.assertEqual(func(20), 30)
+        self.assertEqual(_1, 5)
