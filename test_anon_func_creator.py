@@ -1,4 +1,5 @@
 import unittest
+import math
 
 from anon_func_creator import create_func
 
@@ -41,3 +42,8 @@ class TestCreateFunc(unittest.TestCase):
         func = create_func(string)
         self.assertEqual(func(20), 30)
         self.assertEqual(_1, 5)
+
+    def test_two_scopes_up(self):
+        string = "_1 + math.cos(0)"
+        func = create_func(string)
+        self.assertEqual(func(5), 6)
