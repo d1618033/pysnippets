@@ -1,5 +1,6 @@
 import unittest
 import math
+import timeit
 
 from anon_func_creator import create_func
 
@@ -52,3 +53,12 @@ class TestCreateFunc(unittest.TestCase):
         string = "_1 + 10"
         func = create_func(string)
         self.assertEqual(string, func.__name__)
+
+    def test_speed_compared_to_eval(self):
+        string = "10 + 1"
+
+        def func():
+            return eval(string, globals(), locals())
+
+        func2 = create_func(string)
+        self.assertLess(timeit.timeit(func2, number=100), timeit.timeit(func, number=100))
