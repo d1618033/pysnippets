@@ -3,6 +3,17 @@ import inspect
 
 
 def create_func(string):
+    """
+    Creates an 'annonymous' function
+    Input:
+        string - A string to eval. Use _1, _2, etc... for variables names.
+    Output:
+        A function. The number of arguments of the function depends on the variables you used in the string.
+    Example:
+        >>> f = create_func('_1 + _2*_3')
+        >>> f(7, 5, 2)
+        17
+    """
     matches = re.findall('_\d*', string)
     curframe = inspect.currentframe()
     calframe = inspect.getouterframes(curframe, 2)
@@ -35,3 +46,8 @@ def create_func(string):
             return func(*args)
 
     return Func()
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
