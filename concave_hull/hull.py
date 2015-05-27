@@ -7,7 +7,7 @@ import io
 
 DIR = os.path.dirname(__file__)
 hull_path = os.path.join(DIR, "hull", "hull.exe")
-output_file = os.path.join(DIR, 'hout-alf')
+output_file = 'hout-alf'
 
 
 def get_alpha_shape(points):
