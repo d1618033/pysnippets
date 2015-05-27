@@ -30,3 +30,4 @@ Example
         ...     ax.plot([point_i[0], point_j[0]], [point_i[1], point_j[1]], 'ro-')
         >>> plt.show()
 
+![Picture Output](outputs/cshape-full.png)
