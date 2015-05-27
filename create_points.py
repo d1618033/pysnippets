@@ -18,13 +18,18 @@ class PointCollector:
         self.ax.figure.canvas.draw()     
 
 
-def main(output_file):
+def main(stream):
     fig, ax = plt.subplots()
-    with open(output_file, 'w') as f:
-        pc = PointCollector(ax, f)
-        fig.canvas.mpl_connect('button_press_event', pc.on_click)
-        plt.show()
+    pc = PointCollector(ax, stream)
+    fig.canvas.mpl_connect('button_press_event', pc.on_click)
+    plt.show()
     
 
 if __name__ == "__main__":
-    main('points')
+    import sys
+    if len(sys.argv) >= 2:
+        file_name = sys.argv[1]
+        with open(file_name, 'w') as stream:
+            main(stream)
+    else:
+        main(sys.stdout)
