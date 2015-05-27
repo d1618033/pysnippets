@@ -1,6 +1,10 @@
 Alpha Shapes
 ============
 
+Credits
+-------
+Based on the Stack Overflow question [here](http://stackoverflow.com/questions/6833243/how-can-i-find-the-alpha-shape-concave-hull-of-a-2d-point-cloud)
+
 Requirements
 -------------
 - C compiler
