@@ -3,7 +3,9 @@ Alpha Shapes
 
 Credits
 -------
-Based on the Stack Overflow question [here](http://stackoverflow.com/questions/6833243/how-can-i-find-the-alpha-shape-concave-hull-of-a-2d-point-cloud)
+The main python script is based on the Stack Overflow question [here](http://stackoverflow.com/questions/6833243/how-can-i-find-the-alpha-shape-concave-hull-of-a-2d-point-cloud)
+
+This [post](http://bocoup.com/weblog/compiling-clarksons-hull-in-os-x/) helped in solving an installation issue.
 
 Requirements
 -------------
