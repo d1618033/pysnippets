@@ -26,7 +26,7 @@ Example
         ...     points = [tuple([float(i) for i in line.rstrip().split()]) for line in f]
         >>> fig, ax = plt.subplots()
         >>> ax.plot([point[0] for point in points], [point[1] for point in points], 'bo')
-        >>> for point_i, point_j in get_alpha_shape(points):
+        >>> for point_i, point_j in hull.get_alpha_shape(points):
         ...     ax.plot([point_i[0], point_j[0]], [point_i[1], point_j[1]], 'ro-')
         >>> plt.show()
 
