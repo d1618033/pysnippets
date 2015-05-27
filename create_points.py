@@ -12,6 +12,8 @@ class PointCollector:
         
     def on_click(self, event):
         x, y = event.xdata, event.ydata
+        if x is None or y is None:
+            return
         self.output_stream.write("{0} {1}\n".format(x, y))
         self.ax.plot(x, y, 'bo')
         self._set_limits()
