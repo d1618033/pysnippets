@@ -33,6 +33,10 @@ def plot_hull(ax, points, edges):
         ax.plot([edge_i[0], edge_j[0]], [edge_i[1], edge_j[1]], 'ro-')
 
 
+def pairs(items):
+    return [(items[i], items[i+1]) for i in range(len(items)-1)]
+
+
 def edges_to_vertices(edges):
     vertices = []
     for v1, v2 in edges:
