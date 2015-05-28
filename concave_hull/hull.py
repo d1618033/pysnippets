@@ -4,6 +4,7 @@ import os
 from subprocess import Popen, PIPE, STDOUT
 import io
 import matplotlib.pyplot as plt
+import itertools
 
 
 DIR = os.path.dirname(__file__)
@@ -28,38 +29,49 @@ def get_alpha_shape(points):
 
 
 def plot_hull(ax, points, edges):
-    ax.plot([point[0] for point in points], [point[1] for point in points], 'bo')
+    ax.plot([point[0] for point in points], [point[1] for point in points], 'bo', picker=10)
     for edge_i, edge_j in edges:
         ax.plot([edge_i[0], edge_j[0]], [edge_i[1], edge_j[1]], 'ro-')
     ax.set_title("Area: {0}".format(polygon_area(edges)))
+    vertices = edges_to_vertices(order_edges(edges))
+    poly = plt.Polygon(vertices, facecolor='r', edgecolor='none', alpha=0.5)
+    ax.add_patch(poly)
 
 
 def pairs(items):
     return [(items[i], items[i+1]) for i in range(len(items)-1)]
 
 
+def get_vertices_set(edges):
+    return set(itertools.chain(*edges))
+
+
 def order_edges(edges):
-    new_edges = []
-    for (v1, v2), next_pair in pairs(edges):
-        if v2 in next_pair:
-            new_edges.append((v1, v2))
+    edge_set = set(edges)
+    current_edge = edge_set.pop()
+    edges = [current_edge]
+    while len(edge_set):
+        for other_edge in edge_set:
+            if current_edge[1] == other_edge[0]:
+                current_edge = other_edge
+                edge_to_remove = other_edge
+                edges.append(current_edge)
+                break
+            elif current_edge[1] == other_edge[1]:
+                current_edge = (other_edge[1], other_edge[0])
+                edge_to_remove = other_edge
+                edges.append(current_edge)
+                break
         else:
-            new_edges.append((v2, v1))
-    previous_pair = edges[-2]
-    v1, v2 = edges[-1]
-    if v1 in previous_pair:
-        new_edges.append((v1, v2))
-    else:
-        new_edges.append((v2, v1))
-    return new_edges
+            raise AssertionError("No edge starting from {0}".format(current_edge[1]))
+        edge_set.remove(edge_to_remove)
+    return edges
 
 
 def edges_to_vertices(edges):
     vertices = []
-    ordered_edges = order_edges(edges)
-    for v1, v2 in ordered_edges:
+    for v1, v2 in edges:
         vertices.append(v1)
-    vertices.append(ordered_edges[-1][-1])
     return vertices
 
 
