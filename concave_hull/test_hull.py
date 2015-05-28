@@ -1,6 +1,8 @@
 import unittest
 from concave_hull import hull
 
+import numpy as np
+
 
 class TestPairs(unittest.TestCase):
     def test_two(self):
@@ -36,3 +38,14 @@ class TestEdgesToVertices(unittest.TestCase):
         expected = [(1, 5), (2, 3), (5, 7), (7, 9)]
         actual = hull.edges_to_vertices(edges)
         self.assertEqual(expected, actual)
+
+
+class TestPolygonArea(unittest.TestCase):
+    def test_circle(self):
+        x = np.arange(0, 1, 0.00001)
+        y = np.sqrt(1-x**2)
+        points = list(zip(x, y))
+        edges = hull.pairs(points)
+        expected_area = np.pi / 4
+        actual_area = hull.polygon_area(edges)
+        self.assertAlmostEqual(expected_area, actual_area, places=2)

@@ -45,6 +45,14 @@ def edges_to_vertices(edges):
     return vertices
 
 
+def polygon_area(edges):
+    a = 0.0
+    for (x1, y1), (x2, y2) in edges:
+        a += abs(x1 * y2 - x2 * y1)
+    result = a / 2.0
+    return result
+
+
 def main(stream):
     points = [tuple([float(i) for i in line.rstrip().split()]) for line in stream]
     fig, ax = plt.subplots()
