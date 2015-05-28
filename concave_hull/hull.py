@@ -42,15 +42,15 @@ def order_edges(edges):
     new_edges = []
     for (v1, v2), next_pair in pairs(edges):
         if v2 in next_pair:
-            new_edges.append([v1, v2])
+            new_edges.append((v1, v2))
         else:
-            new_edges.append([v2, v1])
+            new_edges.append((v2, v1))
     previous_pair = edges[-2]
     v1, v2 = edges[-1]
     if v1 in previous_pair:
-        new_edges.append([v1, v2])
+        new_edges.append((v1, v2))
     else:
-        new_edges.append([v2, v1])
+        new_edges.append((v2, v1))
     return new_edges
 
 

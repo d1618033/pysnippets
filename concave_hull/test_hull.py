@@ -26,9 +26,9 @@ class TestOrderEdges(unittest.TestCase):
             [(5, 7), (7, 9)]
         ]
         expected = [
-            [(1, 5), (2, 3)],
-            [(2, 3), (5, 7)],
-            [(5, 7), (7, 9)]
+            ((1, 5), (2, 3)),
+            ((2, 3), (5, 7)),
+            ((5, 7), (7, 9))
         ]
         actual = hull.order_edges(edges)
         self.assertEqual(expected, actual)
@@ -40,9 +40,9 @@ class TestOrderEdges(unittest.TestCase):
             [(7, 9), (5, 7)]
         ]
         expected = [
-            [(1, 5), (2, 3)],
-            [(2, 3), (5, 7)],
-            [(5, 7), (7, 9)]
+            ((1, 5), (2, 3)),
+            ((2, 3), (5, 7)),
+            ((5, 7), (7, 9))
         ]
         actual = hull.order_edges(edges)
         self.assertEqual(expected, actual)
@@ -61,9 +61,9 @@ class TestEdgesToVertices(unittest.TestCase):
 
     def test_ordered_between_but_not_within(self):
         edges = [
-            [(2, 3), (1, 5)],
-            [(2, 3), (5, 7)],
-            [(7, 9), (5, 7)]
+            ((2, 3), (1, 5)),
+            ((2, 3), (5, 7)),
+            ((7, 9), (5, 7))
         ]
         expected = [(1, 5), (2, 3), (5, 7), (7, 9)]
         actual = hull.edges_to_vertices(edges)
