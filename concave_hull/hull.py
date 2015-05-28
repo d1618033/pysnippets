@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
-import sys, os
+import os
 from subprocess import Popen, PIPE, STDOUT
 import io
+import matplotlib.pyplot as plt
 
 
 DIR = os.path.dirname(__file__)
@@ -26,11 +27,23 @@ def get_alpha_shape(points):
     return [(points[i], points[j]) for i, j in results_indices]
 
 
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    points = [tuple([float(i) for i in line.rstrip().split()]) for line in sys.stdin]
-    fig, ax = plt.subplots()
+def plot_hull(ax, points, edges):
     ax.plot([point[0] for point in points], [point[1] for point in points], 'bo')
-    for point_i, point_j in get_alpha_shape(points):
-        ax.plot([point_i[0], point_j[0]], [point_i[1], point_j[1]], 'ro-')
+    for edge_i, edge_j in edges:
+        ax.plot([edge_i[0], edge_j[0]], [edge_i[1], edge_j[1]], 'ro-')
+
+
+def main(stream):
+    points = [tuple([float(i) for i in line.rstrip().split()]) for line in stream]
+    fig, ax = plt.subplots()
+    plot_hull(ax, points, get_alpha_shape(points))
     plt.show()
+
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) >= 2:
+        with open(sys.argv[1]) as f:
+            main(f)
+    else:
+        main(sys.stdin)
