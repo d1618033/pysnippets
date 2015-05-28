@@ -49,3 +49,10 @@ class TestPolygonArea(unittest.TestCase):
         expected_area = np.pi / 4
         actual_area = hull.polygon_area(edges)
         self.assertAlmostEqual(expected_area, actual_area, places=2)
+
+    def test_rectangle(self):
+        vertices = [(0, 0), (0, 5), (10, 5), (10, 0), (0, 0)]
+        edges = hull.pairs(vertices)
+        expected_area = 50
+        actual_area = hull.polygon_area(edges)
+        self.assertEqual(expected_area, actual_area)
