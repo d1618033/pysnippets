@@ -3,8 +3,10 @@
 import os
 from subprocess import Popen, PIPE, STDOUT
 import io
-import matplotlib.pyplot as plt
 import itertools
+
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 DIR = os.path.dirname(__file__)
@@ -25,16 +27,15 @@ def get_alpha_shape(points):
         next(output)
         results_indices = [map(int, line.strip().split()) for line in output]
     os.remove(output_file)
-    return [(points[i], points[j]) for i, j in results_indices]
+    edges = [(points[i], points[j]) for i, j in results_indices]
+    return  edges_to_vertices(order_edges(edges))
 
 
-def plot_hull(ax, points, edges):
-    ax.plot([point[0] for point in points], [point[1] for point in points], 'bo', picker=10)
-    for edge_i, edge_j in edges:
-        ax.plot([edge_i[0], edge_j[0]], [edge_i[1], edge_j[1]], 'ro-')
-    ax.set_title("Area: {0}".format(polygon_area(edges)))
-    vertices = edges_to_vertices(order_edges(edges))
-    poly = plt.Polygon(vertices, facecolor='r', edgecolor='none', alpha=0.5)
+def plot_hull(ax, points, vertices):
+    for data, color in [(points, 'b'), (vertices, 'r')]:
+        ax.plot(*zip(*data), color=color, marker='o', linestyle='')
+    ax.set_title("Area: {0}".format(polygon_area(vertices)))
+    poly = plt.Polygon(vertices, linewidth=2, facecolor='r', edgecolor='r', linestyle='solid', alpha=0.5)
     ax.add_patch(poly)
 
 
@@ -75,16 +76,22 @@ def edges_to_vertices(edges):
     return vertices
 
 
-def polygon_area(edges):
+def polygon_area(vertices):
+    n = len(vertices) # of corners
     a = 0.0
-    for (x1, y1), (x2, y2) in edges:
-        a += abs(x1 * y2 - x2 * y1)
+    for i in range(n):
+        j = (i + 1) % n
+        a += abs(vertices[i][0] * vertices[j][1]-vertices[j][0] * vertices[i][1])
     result = a / 2.0
     return result
 
 
-def main(stream):
+def read_points(stream):
     points = [tuple([float(i) for i in line.rstrip().split()]) for line in stream]
+    return points
+
+def main(stream):
+    points = read_points(stream)
     fig, ax = plt.subplots()
     plot_hull(ax, points, get_alpha_shape(points))
     plt.show()

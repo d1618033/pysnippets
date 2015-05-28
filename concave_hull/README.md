@@ -7,6 +7,8 @@ The main python script is based on the Stack Overflow question [here](http://sta
 
 This [post](http://bocoup.com/weblog/compiling-clarksons-hull-in-os-x/) helped in solving an installation issue.
 
+This [post](http://stackoverflow.com/questions/24467972/calculate-area-of-polygon-given-x-y-coordinates) was used to calculate the area of the hull.
+
 Requirements
 -------------
 - C compiler
@@ -25,11 +27,10 @@ Example
         >>> import matplotlib.pyplot as plt
         >>> import os
         >>> with open(os.path.join('examples', 'cshape-full')) as f:
-        ...     points = [tuple([float(i) for i in line.rstrip().split()]) for line in f]
+        ...     points = read_points(f)
         >>> fig, ax = plt.subplots()
-        >>> ax.plot([point[0] for point in points], [point[1] for point in points], 'bo')
-        >>> for point_i, point_j in hull.get_alpha_shape(points):
-        ...     ax.plot([point_i[0], point_j[0]], [point_i[1], point_j[1]], 'ro-')
+        >>> plot_hull(ax, points, get_alpha_shape(points))
         >>> plt.show()
+
 
 ![Picture Output](outputs/cshape-full.png)
