@@ -31,6 +31,7 @@ def plot_hull(ax, points, edges):
     ax.plot([point[0] for point in points], [point[1] for point in points], 'bo')
     for edge_i, edge_j in edges:
         ax.plot([edge_i[0], edge_j[0]], [edge_i[1], edge_j[1]], 'ro-')
+    ax.set_title("Area: {0}".format(polygon_area(edges)))
 
 
 def pairs(items):
