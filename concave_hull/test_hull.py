@@ -29,6 +29,7 @@ class TestEdgesToVertices(unittest.TestCase):
         actual = hull.edges_to_vertices(edges)
         self.assertEqual(expected, actual)
 
+    @unittest.skip
     def test_ordered_between_but_not_within(self):
         edges = [
             [(2, 3), (1, 5)],
