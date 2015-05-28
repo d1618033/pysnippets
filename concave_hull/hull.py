@@ -33,6 +33,14 @@ def plot_hull(ax, points, edges):
         ax.plot([edge_i[0], edge_j[0]], [edge_i[1], edge_j[1]], 'ro-')
 
 
+def edges_to_vertices(edges):
+    vertices = []
+    for v1, v2 in edges:
+        vertices.append(v1)
+    vertices.append(edges[-1][-1])
+    return vertices
+
+
 def main(stream):
     points = [tuple([float(i) for i in line.rstrip().split()]) for line in stream]
     fig, ax = plt.subplots()
