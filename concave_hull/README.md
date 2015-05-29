@@ -27,9 +27,9 @@ Example
         >>> import matplotlib.pyplot as plt
         >>> import os
         >>> with open(os.path.join('examples', 'cshape-full')) as f:
-        ...     points = read_points(f)
+        ...     points = hull.read_points(f)
         >>> fig, ax = plt.subplots()
-        >>> plot_hull(ax, points, get_alpha_shape(points))
+        >>> hull.plot_hull(ax, points, hull.get_alpha_shape(points))
         >>> plt.show()
 
 
