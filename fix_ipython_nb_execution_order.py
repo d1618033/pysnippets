@@ -1,5 +1,4 @@
 from IPython.nbformat import read, write
-import functools
 
 
 def main(file_name, input_version=4, output_version=3):
